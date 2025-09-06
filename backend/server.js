@@ -2,11 +2,11 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import connectToDB from "./db/connectToDB.js";
-import mainRouter from "./routers/index.router.js";
+import connectToDB from "./config/connectToDB.js";
+import mainRouter from "./routes/index.js";
 
 // ✅ Load environment variables
-dotenv.config();
+dotenv.config({ quiet: true });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -59,7 +59,7 @@ app.use(
 // });
 
 // ✅ Routes
-app.use("/api/v1", mainRouter);
+// app.use("/api/v1", mainRouter);
 
 app.get("/", (req, res) => {
   console.log("ping-backend : " + new Date().toLocaleString());
@@ -78,7 +78,7 @@ const startServer = async () => {
     await connectToDB();
     app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
-      startTimer();
+      // startTimer();
     });
   } catch (err) {
     console.error("❌ Failed to connect to DB:", err.message);

@@ -100,15 +100,16 @@ const Home = () => {
         </motion.button>
 
         <Link to={"/about"}>
-        <motion.button
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold 
-          shadow-lg flex items-center gap-2"
-          whileHover={{ scale: 1.08, rotateX: -5, rotateY: 5 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 150 }}
-        >
-          Learn More
-        </motion.button></Link>
+          <motion.button
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold 
+            shadow-lg flex items-center gap-2"
+            whileHover={{ scale: 1.08, rotateX: -5, rotateY: 5 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 150 }}
+          >
+            Learn More
+          </motion.button>
+        </Link>
       </motion.div>
 
       {/* Announcements Section */}
@@ -117,8 +118,8 @@ const Home = () => {
         animate="visible"
         custom={0.9}
         variants={fadeInUp}
-        className="w-full max-w-4xl mt-8"
-        whileHover={{ scale: 1.02 }}
+        // whileHover={{ scale: 1.02 }}
+        className="w-full flex justify-center mt-8"
       >
         <AnnouncementSection />
       </motion.div>

@@ -16,7 +16,7 @@ const AnnouncementSection = () => {
 
   return (
     <div
-      className="w-[90vw] max-w-[1200px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative 
+      className="w-full max-w-[1200px] min-h-[400px] md:h-[620px] rounded-3xl overflow-hidden shadow-2xl relative 
   bg-gradient-to-br from-sky-100/90 via-indigo-200/80 to-purple-200/80 
   dark:from-gray-900/95 dark:to-gray-800/90 
   backdrop-blur-lg border border-gray-200 dark:border-gray-700 mx-auto flex flex-col"

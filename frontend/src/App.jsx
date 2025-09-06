@@ -12,6 +12,12 @@ import Contact from "./pages/Contact";
 import Footer from "./components/Footer";
 import AnnouncementsPage from "./pages/AnnouncementsPage";
 import AnnouncementDetail from "./pages/AnnouncementDetail";
+import Auth from "./pages/SignUp";
+import { Toaster } from "react-hot-toast";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+
+
 
 // ScrollToTop component
 const ScrollToTop = () => {
@@ -48,6 +54,9 @@ function App() {
       {/* Navbar */}
       <Navbar theme={theme} setTheme={setTheme} />
 
+      {/* Your app routes/components */}
+      <Toaster position="top-right" reverseOrder={false} />
+
       {/* Page Content */}
       <div
         className={`min-h-screen transition-colors duration-700 ease-in-out ${
@@ -59,6 +68,8 @@ function App() {
         <main className="max-w-6xl mx-auto px-4 pt-24 pb-10">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signin" element={<SignIn />} />
             <Route path="/about" element={<About />} />
             <Route path="/announcements" element={<AnnouncementsPage />} />
             <Route
