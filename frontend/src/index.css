@@ -2,14 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes scroll-vertical {
-  0% { transform: translateY(0%); }
-  100% { transform: translateY(-100%); }
+@keyframes scroll-smooth {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
 }
 
-.animate-scroll-vertical {
-  display: flex;
-  flex-direction: column;
-  animation: scroll-vertical 10s linear infinite;
+.animate-scroll-smooth {
+  animation: scroll-smooth 20s linear infinite;
 }
-

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -26,27 +27,42 @@ const Contact = () => {
 
     // Reset form after submit
     setFormData({ name: "", email: "", message: "" });
+
+    setTimeout(() => setSubmitted(false), 4000); // hide success after 4s
   };
 
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center px-6">
-      <div className="w-full max-w-2xl bg-white/60 dark:bg-black/40 backdrop-blur-lg border border-white/30 dark:border-gray-700 rounded-2xl shadow-xl p-8 transition-colors duration-500">
-        <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400 text-center mb-6">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 relative">
+      {/* Background glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 via-indigo-500/10 to-purple-600/20 blur-3xl opacity-70 -z-10" />
+
+      <motion.div
+        className="w-full max-w-2xl bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/30 dark:border-gray-700 rounded-3xl shadow-2xl p-10 transition-colors duration-500"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.02, rotateX: 4, rotateY: -4 }}
+        transition={{ type: "spring", stiffness: 100, damping: 15 }}
+      >
+        <h2 className="text-4xl font-extrabold text-center mb-6 bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
           Contact Us
         </h2>
 
         {submitted && (
-          <p className="text-green-600 dark:text-green-400 text-center mb-4">
+          <motion.p
+            className="text-green-600 dark:text-green-400 text-center mb-5 font-medium"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
             ✅ Thank you! Your message has been sent.
-          </p>
+          </motion.p>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name */}
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
             >
               Your Name
             </label>
@@ -57,7 +73,7 @@ const Contact = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 outline-none transition transform focus:scale-[1.02] shadow-md"
               placeholder="Enter your name"
             />
           </div>
@@ -66,7 +82,7 @@ const Contact = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
             >
               Your Email
             </label>
@@ -77,7 +93,7 @@ const Contact = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition transform focus:scale-[1.02] shadow-md"
               placeholder="Enter your email"
             />
           </div>
@@ -86,7 +102,7 @@ const Contact = () => {
           <div>
             <label
               htmlFor="message"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
             >
               Your Message
             </label>
@@ -97,20 +113,22 @@ const Contact = () => {
               onChange={handleChange}
               required
               rows="5"
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition transform focus:scale-[1.02] shadow-md"
               placeholder="Write your message..."
             ></textarea>
           </div>
 
           {/* Submit Button */}
-          <button
+          <motion.button
             type="submit"
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-semibold hover:opacity-90 hover:scale-[1.02] transition shadow-md"
+            className="w-full py-3 rounded-2xl bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-white font-bold shadow-lg hover:shadow-2xl transform hover:-translate-y-1 active:scale-95 transition-all duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            Send Message
-          </button>
+            🚀 Send Message
+          </motion.button>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 };
