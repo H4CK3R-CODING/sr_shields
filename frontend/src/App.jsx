@@ -5,7 +5,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import Navbar from "./components/Navbar";
+// import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -16,6 +16,9 @@ import Auth from "./pages/SignUp";
 import { Toaster } from "react-hot-toast";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import Page404 from "./pages/404";
+import Navbar1 from "./components/Navbar/Narbar1";
+import Navbar from "./components/Navbar1/Navbar";
 
 
 
@@ -39,6 +42,7 @@ function App() {
       ? "dark"
       : "light";
   });
+  
 
   // Apply theme changes
   useEffect(() => {
@@ -52,6 +56,8 @@ function App() {
       <ScrollToTop />
 
       {/* Navbar */}
+      {/* <Navbar theme={theme} setTheme={setTheme} /> */}
+      {/* <Navbar1/> */}
       <Navbar theme={theme} setTheme={setTheme} />
 
       {/* Your app routes/components */}
@@ -65,7 +71,7 @@ function App() {
             : "bg-gradient-to-tr from-sky-300 via-indigo-200 to-purple-200 text-gray-900"
         }`}
       >
-        <main className="max-w-6xl mx-auto px-4 pt-24 pb-10">
+        <main className="max-w-6xl mx-auto px-4 pt-24 pb-10 select-none">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/signup" element={<SignUp />} />
@@ -77,6 +83,7 @@ function App() {
               element={<AnnouncementDetail />}
             />
             <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<Page404 />}></Route>
           </Routes>
         </main>
 

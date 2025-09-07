@@ -32,7 +32,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 relative">
+    <div className=" pt-11 flex flex-col items-center justify-center px-6 relative">
       {/* Background glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 via-indigo-500/10 to-purple-600/20 blur-3xl opacity-70 -z-10" />
 

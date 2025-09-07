@@ -59,7 +59,7 @@ app.use(
 // });
 
 // ✅ Routes
-// app.use("/api/v1", mainRouter);
+app.use("/api/v1", mainRouter);
 
 app.get("/", (req, res) => {
   console.log("ping-backend : " + new Date().toLocaleString());

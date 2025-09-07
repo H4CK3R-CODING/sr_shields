@@ -28,7 +28,7 @@ const AnnouncementSection = () => {
         className="text-3xl font-extrabold p-5 border-b dark:border-gray-700 
   text-gray-900 dark:text-gray-100 flex items-center gap-3"
       >
-        Announcements
+        Latest Updates
       </h2>
 
       {/* Scrolling List */}

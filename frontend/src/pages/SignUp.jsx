@@ -5,6 +5,8 @@ import { toast } from "react-hot-toast";
 import ToggleUser from "../components/ToggleUser";
 import Btn from "../components/Btn";
 import VerifyOtpModal from "../components/VerifyOtpModal";
+import { useSetRecoilState } from "recoil";
+import { authState } from "../recoil/globalAtom";
 
 const SignUp = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
   const [signupData, setSignupData] = useState({
@@ -21,6 +23,7 @@ const SignUp = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
   const [role, setRole] = useState("user");
   const [isLoading, setIsLoading] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const setState = useSetRecoilState(authState);
 
   const navigate = useNavigate();
 
@@ -92,7 +95,7 @@ const SignUp = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
       payload.role = role;
 
       const { data } = await axios.post(
-        `${import.meta.env.VITE_BACKENDURL}/api/v1/user/signup`,
+        `${import.meta.env.VITE_BACKENDURL}/api/v1/auth/signup`,
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -101,15 +104,18 @@ const SignUp = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
       );
 
       if (data) {
-        toast.success(data.msg || "Signup successful!");
-        setIsLoggedIn(true);
-        setUserId(data.userId);
-        setActiveUser(data.activeUser);
-        localStorage.setItem("token", data.jwt);
-        navigate("/");
+        toast.success(data.message || "Signup successful!");
+        // setIsLoggedIn(true);
+        // setUserId(data.userId);
+        // setActiveUser(data.activeUser);
+
+        setShowOtpModal(true);
+        // setState({ user: data.user, loading: false });
+        // localStorage.setItem("token", data.jwt);
+        // navigate("/");
       }
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Backend not responding.");
+      toast.error(error.response?.data?.message || "Backend not responding.");
       console.error("Signup error:", error);
     } finally {
       setIsLoading(false);
@@ -130,8 +136,9 @@ const SignUp = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
         <VerifyOtpModal
           onClose={() => setShowOtpModal(false)}
           onVerify={async (otp) => {
-            if (!otp || !gmail || !name) {
-              toast.error("Please fill in all fields.");
+            const email = signupData.email;
+            if (!otp || !email) {
+              toast.error("Please Enter OTP");
               setIsLoading(false);
               return;
             }
@@ -142,14 +149,14 @@ const SignUp = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
               };
 
               const { data } = await axios.post(
-                `${import.meta.env.VITE_BACKENDURL}/api/v1/user/verify`,
-                { name, gmail, otp: otp.toString(), role },
+                `${import.meta.env.VITE_BACKENDURL}/api/v1/auth/verify-otp`,
+                { email, otp: otp.toString() },
                 { withCredentials: true },
                 config
               );
 
               if (data) {
-                toast.success(data.msg);
+                toast.success(data.message);
                 if (data.role === "admin") {
                   toast.error(
                     "Your account is awaiting ChiefAdmin approval. You’ll be able to log in once approved.",
@@ -157,6 +164,8 @@ const SignUp = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
                   );
                 }
                 setShowOtpModal(false);
+                setState({ user: data.user, loading: false });
+                localStorage.setItem("token", data.token);
                 navigate("/signin");
               } else {
                 toast.error("Something went wrong.");

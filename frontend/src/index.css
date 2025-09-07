@@ -10,3 +10,18 @@
 .animate-scroll-smooth {
   animation: scroll-smooth 20s linear infinite;
 }
+
+
+
+/* remove scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  scrollbar-width: none;
+}
+
+body {
+  -ms-overflow-style: none;
+}

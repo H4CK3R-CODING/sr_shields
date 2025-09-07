@@ -58,6 +58,18 @@ const Home = () => {
         .
       </motion.p>
 
+      {/* Announcements Section */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        custom={0.9}
+        variants={fadeInUp}
+        // whileHover={{ scale: 1.02 }}
+        className="w-full flex justify-center mt-8"
+      >
+        <AnnouncementSection />
+      </motion.div>
+
       {/* Card Style Section */}
       <motion.div
         initial="hidden"
@@ -110,18 +122,6 @@ const Home = () => {
             Learn More
           </motion.button>
         </Link>
-      </motion.div>
-
-      {/* Announcements Section */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        custom={0.9}
-        variants={fadeInUp}
-        // whileHover={{ scale: 1.02 }}
-        className="w-full flex justify-center mt-8"
-      >
-        <AnnouncementSection />
       </motion.div>
     </div>
   );

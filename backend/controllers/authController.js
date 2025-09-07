@@ -13,9 +13,18 @@ export const signup = async (req, res) => {
     if (!parsedData.success)
       return res.status(400).json({ errors: parsedData.error.errors });
 
-    const { name, email, password, course, college, session, phone_number, role } = parsedData.data;
+    const {
+      name,
+      email,
+      password,
+      course,
+      college,
+      session,
+      phone_number,
+      role,
+    } = parsedData.data;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email, isVerified: true });
     if (existingUser)
       return res.status(400).json({ message: "Email already exists" });
 
@@ -23,24 +32,42 @@ export const signup = async (req, res) => {
     const otp = genOtp();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    const newUser = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      course,
-      college,
-      session,
-      phone_number,
-      role,
-      otp,
-      otpExpires,
-    });
+    // const newUser = await User.create({
+    //   name,
+    //   email,
+    //   password: hashedPassword,
+    //   course,
+    //   college,
+    //   session,
+    //   phone_number,
+    //   role,
+    //   otp,
+    //   otpExpires,
+    // });
 
     // Send OTP email
     await sendMail(
       "Verify Your Email OTP",
       `<h3>Your OTP is: ${otp}</h3><p>It expires in 10 minutes.</p>`,
       email
+    );
+
+    const newUser = await User.updateOne(
+      { email },
+      {
+        $set: {
+          name,
+          password: hashedPassword,
+          course,
+          college,
+          session,
+          phone_number,
+          role,
+          otp,
+          otpExpires,
+        },
+      },
+      { upsert: true, new: true }
     );
 
     res.status(201).json({
@@ -85,8 +112,10 @@ export const resetPassword = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (user.otp !== otp) return res.status(400).json({ message: "Invalid OTP" });
-    if (user.otpExpires < new Date()) return res.status(400).json({ message: "OTP expired" });
+    if (user.otp !== otp)
+      return res.status(400).json({ message: "Invalid OTP" });
+    if (user.otpExpires < new Date())
+      return res.status(400).json({ message: "OTP expired" });
 
     // Update password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -100,7 +129,6 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 // Verify OTP
 export const verifyOtp = async (req, res) => {
@@ -153,13 +181,41 @@ export const login = async (req, res) => {
 
     // Optionally set JWT in cookie
     res
-      .cookie("token", token, { httpOnly: true, maxAge: 15 * 24 * 60 * 60 * 1000 })
+      .cookie("token", token, {
+        httpOnly: true,
+        maxAge: 15 * 24 * 60 * 60 * 1000,
+      })
       .json({
         message: "Login successful",
-        user: { id: user._id, name: user.name, email: user.email, role: user.role },
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        token,
       });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+export const isLogin = async (req, res) => {
+  try {
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+    if (!token)
+      return res.status(401).json({ msg: "No token, authorization denied" });
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password -otp -otpExpires");
+    console.log(user)
+
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    res.json(user);
+  } catch (err) {
+    res.status(401).json({ msg: "Invalid token", error: err.message });
   }
 };
 

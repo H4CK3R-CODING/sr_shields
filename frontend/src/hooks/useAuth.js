@@ -1,35 +1,36 @@
+// hooks/useAuth.js
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
-import axios from "axios";
 import { authState } from "../recoil/globalAtom";
+import axios from "axios";
 
 export const useAuth = () => {
-  const [auth, setAuth] = useRecoilState(authState);
+  const [state, setState] = useRecoilState(authState);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser && savedUser !== "undefined") {
-      try {
-        setAuth({ user: JSON.parse(savedUser), loading: true });
-      } catch (e) {
-        console.error("Invalid user data in localStorage", e);
-        localStorage.removeItem("user");
-      }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setState({ user: null, loading: false });
+      return;
     }
 
-    const verifyUser = async () => {
-      try {
-        const res = await axios.get("/api/auth/me", { withCredentials: true });
-        setAuth({ user: res.data.user, loading: false });
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-      } catch (err) {
-        setAuth({ user: null, loading: false });
-        localStorage.removeItem("user");
-      }
-    };
+    // Start verifying with backend
+    setState((prev) => ({ ...prev, loading: true }));
+    console.log(`${import.meta.env.VITE_BACKENDURL}`)
 
-    verifyUser();
-  }, [setAuth]);
+    axios
+      .get(`${import.meta.env.VITE_BACKENDURL}/api/v1/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        console.log(res)
+        setState({ user: res.data, loading: false });
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+        setState({ user: null, loading: false });
+      });
+  }, [setState]);
 
-  return auth;
+  return state;
 };

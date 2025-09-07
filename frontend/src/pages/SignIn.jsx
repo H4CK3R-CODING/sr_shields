@@ -4,21 +4,24 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import ToggleUser from "../components/ToggleUser";
 import Btn from "../components/Btn";
+import { useSetRecoilState } from "recoil";
+import { authState } from "../recoil/globalAtom";
 
 const SignIn = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user"); // from toggle
   const [isLoading, setIsLoading] = useState(false);
+  const setState = useSetRecoilState(authState);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/");
-      return;
-    }
-  }, [isLoggedIn, navigate]);
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     navigate("/");
+  //     return;
+  //   }
+  // }, [isLoggedIn, navigate]);
 
   const btninfo = {
     label: "Sign In",
@@ -42,24 +45,25 @@ const SignIn = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
         };
 
         const { data } = await axios.post(
-          `${import.meta.env.VITE_BACKENDURL}/api/v1/user/signin`,
-          { username, password, role },
+          `${import.meta.env.VITE_BACKENDURL}/api/v1/auth/signin`,
+          { email : username, password, role },
           { withCredentials: true },
           config
         );
 
         if (data) {
-          toast.success(data.msg);
-          setIsLoggedIn(true);
-          setUserId(data.userId);
-          setActiveUser(data.activeUser);
-          localStorage.setItem("token", data.jwt);
+          toast.success(data.message);
+          // setIsLoggedIn(true);
+          // setUserId(data.userId);
+          // setActiveUser(data.activeUser);
+          localStorage.setItem("token", data.token);
+          setState({ user: data.user, loading: false });
           navigate("/");
         } else {
-          toast.error(data.msg || "Something went wrong.");
+          toast.error(data.message || "Something went wrong.");
         }
       } catch (error) {
-        toast.error(error.response?.data?.msg || "Backend not responding.");
+        toast.error(error.response?.data?.message || "Backend not responding.");
         console.error(error);
       } finally {
         setIsLoading(false);
