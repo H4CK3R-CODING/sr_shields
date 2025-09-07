@@ -5,20 +5,22 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-// import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Footer from "./components/Footer";
-import AnnouncementsPage from "./pages/AnnouncementsPage";
 import AnnouncementDetail from "./pages/AnnouncementDetail";
-import Auth from "./pages/SignUp";
 import { Toaster } from "react-hot-toast";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Page404 from "./pages/404";
-import Navbar1 from "./components/Navbar/Narbar1";
-import Navbar from "./components/Navbar1/Navbar";
+import AnnouncementsPage from "./pages/Announcement Page/AnnouncementsPage";
+import Navbar from "./components/Navbar/Navbar";
+import Developer from "./pages/Developer";
+import ForgetPass from "./components/ForgetPass/ForgetPass";
+import SetPassword from "./components/ForgetPass/SetPassword";
+
+
 
 
 
@@ -78,11 +80,15 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/about" element={<About />} />
             <Route path="/announcements" element={<AnnouncementsPage />} />
+            
             <Route
-              path="/announcements/:slug"
+              path="/announcement/:id"
               element={<AnnouncementDetail />}
             />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/forgetpass" element={<ForgetPass />} />
+            <Route path="/setPassword" element={<SetPassword />} />
+            <Route path="/developer" element={<Developer />} />
             <Route path="*" element={<Page404 />}></Route>
           </Routes>
         </main>

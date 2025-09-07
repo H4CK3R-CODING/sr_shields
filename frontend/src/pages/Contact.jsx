@@ -1,5 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast"; // react-hot-toast
+import Btn from "../components/Btn";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -7,51 +12,91 @@ const Contact = () => {
     email: "",
     message: "",
   });
-
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Handle input changes
+  useEffect(() => {
+    AOS.init({ duration: 1000, once: true, easing: "ease-in-out" });
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submit
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form Submitted:", formData);
-    setSubmitted(true);
+  const handleSubmit = async (event) => {
+    try {
+      event.preventDefault();
+      setIsLoading(true);
 
-    // Reset form after submit
-    setFormData({ name: "", email: "", message: "" });
+      // Validation
+      if (!formData.name || !formData.email || !formData.message) {
+        toast.error("Please fill in all fields.");
+        setIsLoading(false);
+        return;
+      }
 
-    setTimeout(() => setSubmitted(false), 4000); // hide success after 4s
+      const config = {
+        headers: { "Content-Type": "application/json" },
+      };
+
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_BACKENDURL}/api/v1/sendMessage`,
+        formData,
+        { withCredentials: true },
+        config
+      );
+
+      if (data) {
+        toast.success(data.message || "Message sent successfully!");
+        setSubmitted(true);
+        setFormData({ name: "", email: "", message: "" });
+        setTimeout(() => setSubmitted(false), 4000);
+      } else {
+        toast.error("Something went wrong.");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Backend not responding.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const btninfo = {
+    label: "🚀 Send Message",
+    onclick: handleSubmit,
   };
 
   return (
-    <div className=" pt-11 flex flex-col items-center justify-center px-6 relative">
-      {/* Background glow effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 via-indigo-500/10 to-purple-600/20 blur-3xl opacity-70 -z-10" />
+    <div className="pt-16 flex flex-col items-center justify-center px-6 relative">
+      {/* react-hot-toast Toaster */}
+      <Toaster position="top-right" reverseOrder={false} />
+
+      {/* Background glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 via-indigo-500/10 to-purple-600/20 blur-3xl opacity-60 -z-10" />
 
       <motion.div
-        className="w-full max-w-2xl bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/30 dark:border-gray-700 rounded-3xl shadow-2xl p-10 transition-colors duration-500"
-        initial={{ opacity: 0, y: 40 }}
+        className="w-full max-w-2xl bg-white/80 dark:bg-black/50 backdrop-blur-xl border border-white/30 dark:border-gray-700 rounded-3xl shadow-2xl p-10 transition-colors duration-500"
+        initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
-        whileHover={{ scale: 1.02, rotateX: 4, rotateY: -4 }}
-        transition={{ type: "spring", stiffness: 100, damping: 15 }}
+        whileHover={{ scale: 1.02, rotateX: 3, rotateY: -3 }}
+        transition={{ type: "spring", stiffness: 120, damping: 18 }}
+        data-aos="fade-up"
       >
-        <h2 className="text-4xl font-extrabold text-center mb-6 bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
+        <h2
+          className="text-5xl font-extrabold text-center mb-8 bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent"
+          data-aos="zoom-in"
+        >
           Contact Us
         </h2>
 
         {submitted && (
           <motion.p
-            className="text-green-600 dark:text-green-400 text-center mb-5 font-medium"
+            className="text-green-600 dark:text-green-400 text-center mb-6 font-medium"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
+            data-aos="fade-down"
           >
             ✅ Thank you! Your message has been sent.
           </motion.p>
@@ -59,7 +104,7 @@ const Contact = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name */}
-          <div>
+          <div data-aos="fade-right">
             <label
               htmlFor="name"
               className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
@@ -73,13 +118,13 @@ const Contact = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 outline-none transition transform focus:scale-[1.02] shadow-md"
+              className="w-full px-5 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 outline-none transition duration-300 transform focus:scale-[1.02] shadow-md"
               placeholder="Enter your name"
             />
           </div>
 
           {/* Email */}
-          <div>
+          <div data-aos="fade-left">
             <label
               htmlFor="email"
               className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
@@ -93,13 +138,13 @@ const Contact = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition transform focus:scale-[1.02] shadow-md"
+              className="w-full px-5 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 outline-none transition duration-300 transform focus:scale-[1.02] shadow-md"
               placeholder="Enter your email"
             />
           </div>
 
           {/* Message */}
-          <div>
+          <div data-aos="fade-up">
             <label
               htmlFor="message"
               className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
@@ -113,20 +158,13 @@ const Contact = () => {
               onChange={handleChange}
               required
               rows="5"
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition transform focus:scale-[1.02] shadow-md"
+              className="w-full px-5 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 outline-none transition duration-300 transform focus:scale-[1.02] shadow-md"
               placeholder="Write your message..."
             ></textarea>
           </div>
 
           {/* Submit Button */}
-          <motion.button
-            type="submit"
-            className="w-full py-3 rounded-2xl bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-white font-bold shadow-lg hover:shadow-2xl transform hover:-translate-y-1 active:scale-95 transition-all duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            🚀 Send Message
-          </motion.button>
+          <Btn btninfo={btninfo} loading={isLoading} />
         </form>
       </motion.div>
     </div>

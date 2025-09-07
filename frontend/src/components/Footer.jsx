@@ -1,5 +1,8 @@
 import React from "react";
-import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import { Instagram, Youtube } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
+import { IoMailOpenOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -29,7 +32,7 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* Quick Links */}
+        {/* Publisher Section */}
         <div>
           <h3
             className="text-3xl font-extrabold mb-4
@@ -37,14 +40,34 @@ const Footer = () => {
               dark:from-sky-300 dark:via-indigo-300 dark:to-purple-400
               bg-clip-text text-transparent"
           >
-            Quick Links
+            Publisher
+          </h3>
+          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            Published & Managed by{" "}
+            <Link to={"/developer"}><span className="font-semibold underline text-blue-500 dark:text-blue-400">
+              Gaurav Rathour
+            </span></Link>
+            . Dedicated to providing accurate and timely updates for students
+            and professionals.
+          </p>
+        </div>
+
+        {/* Resources Section */}
+        <div>
+          <h3
+            className="text-3xl font-extrabold mb-4
+              bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600
+              dark:from-sky-300 dark:via-indigo-300 dark:to-purple-400
+              bg-clip-text text-transparent"
+          >
+            Resources
           </h3>
           <ul className="space-y-3 text-gray-800 dark:text-gray-200">
             {[
-              { name: "Registration", link: "/registration" },
-              { name: "Job Fair", link: "/jobs" },
-              { name: "Hackathon", link: "/hackathon" },
-              { name: "Guest Lecture", link: "/lecture" },
+              { name: "Privacy Policy", link: "/privacy" },
+              { name: "Terms & Conditions", link: "/terms" },
+              { name: "Help & Support", link: "/help" },
+              { name: "Contact Us", link: "/contact" },
             ].map((item, idx) => (
               <li key={idx}>
                 <a
@@ -60,59 +83,46 @@ const Footer = () => {
             ))}
           </ul>
         </div>
+      </div>
 
-        {/* Social Links */}
-        <div className="text-center md:text-left">
-          <h3
-            className="text-3xl font-extrabold mb-4
-              bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600
-              dark:from-sky-300 dark:via-indigo-300 dark:to-purple-400
-              bg-clip-text text-transparent"
-          >
-            Follow Us
-          </h3>
-          <div className="flex justify-center md:justify-start space-x-6 flex-wrap gap-3">
-            <a
-              href="https://www.youtube.com/@mrsrshield"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400 shadow-md
-                hover:scale-110 hover:shadow-lg hover:shadow-red-400/30 transition-all duration-300"
-            >
-              <Youtube size={24} />
-            </a>
-            <a
-              href="https://www.instagram.com/iam_sr______/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-500 dark:text-pink-400 shadow-md
-                hover:scale-110 hover:shadow-lg hover:shadow-pink-400/30 transition-all duration-300"
-            >
-              <Instagram size={24} />
-            </a>
-            <a
-              href="#"
-              className="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-md
-                hover:scale-110 hover:shadow-lg hover:shadow-blue-400/30 transition-all duration-300"
-            >
-              <Facebook size={24} />
-            </a>
-            <a
-              href="#"
-              className="p-3 rounded-full bg-sky-100 dark:bg-sky-900/30 text-sky-500 dark:text-sky-300 shadow-md
-                hover:scale-110 hover:shadow-lg hover:shadow-sky-400/30 transition-all duration-300"
-            >
-              <Twitter size={24} />
-            </a>
-            <a
-              href="#"
-              className="p-3 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 shadow-md
-                hover:scale-110 hover:shadow-lg hover:shadow-indigo-400/30 transition-all duration-300"
-            >
-              <Linkedin size={24} />
-            </a>
-          </div>
-        </div>
+      {/* Social Links */}
+      <div className="mt-12 flex justify-center gap-5 flex-wrap">
+        <a
+          href="https://www.youtube.com/@mrsrshield"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-4 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400 shadow-md
+            hover:scale-110 hover:shadow-lg hover:shadow-red-400/30 transition-all duration-300"
+        >
+          <Youtube size={28} />
+        </a>
+        <a
+          href="https://www.instagram.com/iam_sr______/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-4 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-500 dark:text-pink-400 shadow-md
+            hover:scale-110 hover:shadow-lg hover:shadow-pink-400/30 transition-all duration-300"
+        >
+          <Instagram size={28} />
+        </a>
+        <a
+          href="https://wa.me/+918607550898"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-4 rounded-full bg-green-100 dark:bg-green-900/30 text-green-500 dark:text-green-400 shadow-md
+            hover:scale-110 hover:shadow-lg hover:shadow-green-400/30 transition-all duration-300"
+        >
+          <SiWhatsapp size={28} />
+        </a>
+        <a
+          href="mailto:souravrathour02@gmail.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-4 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-500 dark:text-blue-400 shadow-md
+            hover:scale-110 hover:shadow-lg hover:shadow-blue-400/30 transition-all duration-300"
+        >
+          <IoMailOpenOutline size={28} />
+        </a>
       </div>
 
       {/* Footer Bottom */}

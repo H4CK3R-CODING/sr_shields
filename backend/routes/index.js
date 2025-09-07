@@ -1,8 +1,11 @@
 import express from "express";
 import authRoutes from "./auth.js"
+import announcementRoutes from "./announcementRoutes.js";
+import { contactForm } from "../controllers/contactController.js";
 const mainRouter = express.Router();
 
 mainRouter.use("/auth", authRoutes);
-// mainRouter.use('/notes', );
+mainRouter.use('/announcement', announcementRoutes);
+mainRouter.use("/sendMessage", contactForm);
 
 export default mainRouter;

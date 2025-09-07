@@ -2,6 +2,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SiInstagram, SiWhatsapp } from "react-icons/si";
+import { IoMailOpenOutline } from "react-icons/io5";
 
 // Animation variants
 const fadeInUp = {
@@ -52,6 +54,52 @@ const About = () => {
         About <span className="italic">✪Mʀ.SR's🛡️Sʜɪᴇʟᴅ CℽBer Cᴀғᴇ☆</span>
       </motion.h1>
 
+      {/* Profile Section */}
+      <motion.div
+        className="flex flex-col items-center space-y-4"
+        initial="hidden"
+        animate="visible"
+        custom={0.2}
+        variants={fadeInUp}
+      >
+        {/* Profile Image with Hover Overlay */}
+        <div className="relative group">
+          <img
+            src="/profile.jpeg" // 👉 replace with your profile image path
+            alt="Profile"
+            className="w-56 h-56 rounded-full border-4 border-indigo-500 shadow-2xl object-cover"
+          />
+
+          {/* Social Icons on Hover */}
+          <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            <div className="flex gap-6">
+              <SiInstagram
+                onClick={() =>
+                  window.open("https://www.instagram.com/iam_sr______/")
+                }
+                className="w-8 h-8 cursor-pointer text-pink-500 hover:scale-110 transition-transform"
+              />
+              <SiWhatsapp
+                onClick={() => window.open("https://wa.me/+918607550898")}
+                className="w-8 h-8 cursor-pointer text-green-500 hover:scale-110 transition-transform"
+              />
+              <IoMailOpenOutline
+                onClick={() => window.open("mailto:souravrathour02@gmail.com")}
+                className="w-8 h-8 cursor-pointer text-blue-500 hover:scale-110 transition-transform"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Profile Name */}
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          Mr. Sourav Rathour
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 text-center">
+          Founder of ✪Mʀ.SR's🛡️Sʜɪᴇʟᴅ CℽBer Cᴀғᴇ☆
+        </p>
+      </motion.div>
+
       {/* Subheading */}
       <motion.p
         initial="hidden"
@@ -62,11 +110,14 @@ const About = () => {
         whileHover={{ scale: 1.02 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        We provide **all the latest updates about jobs, university
-        notifications, and different types of forms** such as scholarships,
-        government forms, and job applications. Our goal is to keep you
-        informed, save your time, and empower you with reliable and trustworthy
-        information.
+        We provide{" "}
+        <b>
+          all the latest updates about jobs, university notifications, and
+          different types of forms
+        </b>{" "}
+        such as scholarships, government forms, and job applications. Our goal
+        is to keep you informed, save your time, and empower you with reliable
+        and trustworthy information.
       </motion.p>
 
       {/* Features / Services */}

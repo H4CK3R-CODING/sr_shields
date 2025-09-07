@@ -6,35 +6,47 @@ const announcementSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-    },
-    slug: {
-      type: String,
-      required: true,
-      unique: true, // for dynamic routing like /announcement/:slug
-      lowercase: true,
-      trim: true,
+      maxlength: 150,
     },
     content: {
       type: String,
       required: true,
-    },
-    date: {
-      type: Date,
-      default: Date.now,
+      maxlength: 5000,
     },
     category: {
-      type: String, // e.g., "University", "Job", "Scholarship"
-      default: "General",
+      type: String,
+      enum: ["notice", "update", "job", "form"],
+      required: true,
+      index: true,
+    },
+    urls: [
+      {
+        heading: { type: String, trim: true },
+        url: {
+          type: String,
+          validate: {
+            validator: (v) => /^https?:\/\/.+/.test(v),
+            message: (props) => `${props.value} is not a valid URL!`,
+          },
+        },
+      },
+    ],
+    meta: [
+      {
+        key: { type: String, required: true, trim: true }, // dynamic field title
+        value: { type: String, required: true },           // dynamic field value
+      },
+    ],
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     isActive: {
       type: Boolean,
       default: true,
     },
-    tags: [String], // optional, for search/filter
   },
   { timestamps: true }
 );
 
-const Announcement = mongoose.model("Announcement", announcementSchema);
-
-export default Announcement;
+export default mongoose.model("Announcement", announcementSchema);
