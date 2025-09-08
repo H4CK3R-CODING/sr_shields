@@ -7,6 +7,8 @@ import { FaPlus } from "react-icons/fa";
 import AnnouncementsList from "./AnnouncementsList";
 import Pagination from "./Pagination";
 import AnnouncementForm from "./AnnouncementForm";
+import { useRecoilValue } from "recoil";
+import { authState } from "../../recoil/globalAtom";
 
 const AnnouncementsPage = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -18,42 +20,42 @@ const AnnouncementsPage = () => {
   const [selectedAnnouncementId, setSelectedAnnouncementId] = useState(null);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const {user} = useRecoilValue(authState);
 
   useEffect(() => {
-  AOS.init({ duration: 1000, once: true });
-}, []);
+    AOS.init({ duration: 1000, once: true });
+  }, []);
 
-useEffect(() => {
-  fetchAnnouncements();
-}, [currentPage, filter, search]);
-// Refresh AOS whenever announcements change
-useEffect(() => {
-  AOS.refresh(); // ensures dynamically added elements animate
-}, [announcements]);
+  useEffect(() => {
+    fetchAnnouncements();
+  }, [currentPage, filter, search]);
+  // Refresh AOS whenever announcements change
+  useEffect(() => {
+    AOS.refresh(); // ensures dynamically added elements animate
+  }, [announcements]);
 
-const fetchAnnouncements = async () => {
-  setLoading(true);
-  try {
-    const params = {
-      category: filter !== "all" ? filter : undefined,
-      search: search || undefined,
-      page: currentPage,
-      limit: 10,
-    };
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_BACKENDURL}/api/v1/announcement`,
-      { params, withCredentials: true }
-    );
-    setAnnouncements(data.data || []);
-    setTotalPages(data.pagination.pages || 1);
-  } catch (error) {
-    console.error("Failed to fetch announcements:", error);
-  } finally {
-    setLoading(false);
-    AOS.refresh(); // <-- refresh AOS after updating announcements
-  }
-};
-
+  const fetchAnnouncements = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        category: filter !== "all" ? filter : undefined,
+        search: search || undefined,
+        page: currentPage,
+        limit: 10,
+      };
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BACKENDURL}/api/v1/announcement`,
+        { params, withCredentials: true }
+      );
+      setAnnouncements(data.data || []);
+      setTotalPages(data.pagination.pages || 1);
+    } catch (error) {
+      console.error("Failed to fetch announcements:", error);
+    } finally {
+      setLoading(false);
+      AOS.refresh(); // <-- refresh AOS after updating announcements
+    }
+  };
 
   const handlePrev = () => currentPage > 1 && setCurrentPage(currentPage - 1);
   const handleNext = () =>
@@ -85,10 +87,10 @@ const fetchAnnouncements = async () => {
   return (
     <div className="max-w-4xl mx-auto my-12 px-4 relative">
       <h1
-        className="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400"
+        className="text-4xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400"
         data-aos="fade-down"
       >
-        Announcements
+        Latest Updates
       </h1>
 
       {/* Top Controls */}
@@ -96,12 +98,14 @@ const fetchAnnouncements = async () => {
         className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4"
         data-aos="fade-up"
       >
-        <button
-          onClick={handleAddClick}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition w-full sm:w-auto justify-center"
-        >
-          <FaPlus /> Add Announcement
-        </button>
+        {user?.role === "admin" && (
+          <button
+            onClick={handleAddClick}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition w-full sm:w-auto justify-center"
+          >
+            <FaPlus /> Add Announcement
+          </button>
+        )}
 
         <input
           type="text"

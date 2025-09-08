@@ -19,6 +19,7 @@ import Navbar from "./components/Navbar/Navbar";
 import Developer from "./pages/Developer";
 import ForgetPass from "./components/ForgetPass/ForgetPass";
 import SetPassword from "./components/ForgetPass/SetPassword";
+import JoinGroupsPage from "./pages/JoinGroupsPage";
 
 
 
@@ -79,6 +80,7 @@ function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/about" element={<About />} />
+            <Route path="/join" element={<JoinGroupsPage />} />
             <Route path="/announcements" element={<AnnouncementsPage />} />
             
             <Route

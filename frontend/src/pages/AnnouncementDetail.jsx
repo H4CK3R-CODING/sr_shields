@@ -88,12 +88,19 @@ const AnnouncementDetail = () => {
           <ul className="space-y-2">
             {announcement.urls.map((u, index) => (
               <li key={index}>
-                <Link
+                <a
+                  href={u.url}
+                  target="_blank"
+                  className="block px-4 py-2 bg-blue-50 dark:bg-blue-900 rounded-lg text-blue-600 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800 transition"
+                >
+                  {u.heading || u.url}
+                </a>
+                {/* <Link
                   to={u.url}
                   className="block px-4 py-2 bg-blue-50 dark:bg-blue-900 rounded-lg text-blue-600 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800 transition"
                 >
                   {u.heading || u.url}
-                </Link>
+                </Link> */}
               </li>
             ))}
           </ul>

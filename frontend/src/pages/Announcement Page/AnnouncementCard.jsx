@@ -1,8 +1,11 @@
 import React from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { authState } from "../../recoil/globalAtom";
+import { useRecoilValue } from "recoil";
 
 const AnnouncementCard = ({ item, onEdit, onDelete }) => {
+  const {user} = useRecoilValue(authState);
   return (
     <div
       className="p-4 rounded-xl shadow-lg bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 dark:from-blue-700 dark:via-indigo-800 dark:to-purple-700 text-white font-semibold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4"
@@ -15,7 +18,7 @@ const AnnouncementCard = ({ item, onEdit, onDelete }) => {
       >
         {item.title} <span className="italic">({item.category})</span>
       </Link>
-      <div className="flex gap-2 mt-2 sm:mt-0">
+      {user?.role == "admin" && <div className="flex gap-2 mt-2 sm:mt-0">
         <button
           onClick={() => onEdit(item._id)}
           className="px-3 py-1 bg-yellow-500 rounded-lg hover:bg-yellow-600 transition"
@@ -28,7 +31,7 @@ const AnnouncementCard = ({ item, onEdit, onDelete }) => {
         >
           <FaTrash />
         </button>
-      </div>
+      </div>}
     </div>
   );
 };

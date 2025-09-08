@@ -5,6 +5,7 @@ import AnnouncementSection from "../components/Announcement";
 import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import StatsSection from "../components/StatsSection";
 
 // Animation variants for framer-motion (optional)
 const fadeInUp = {
@@ -20,6 +21,12 @@ const Home = () => {
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
   }, []);
+
+  const stats = [
+    { label: "Active Users", value: 1240 },
+    { label: "Announcements Posted", value: 325 },
+    { label: "Notices Published", value: 87 },
+  ];
 
   return (
     <div className="min-h-screen mt-20 flex flex-col items-center text-center px-6 space-y-10 transition-colors duration-500">
@@ -55,6 +62,31 @@ const Home = () => {
         .
       </motion.p>
 
+      {/* Call-to-Action Buttons */}
+      <div
+        data-aos="fade-up"
+        data-aos-delay="500"
+        className="flex flex-wrap gap-4"
+      >
+        <Link to={"/join"}>
+          <motion.button
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-semibold 
+          shadow-lg flex items-center gap-2 hover:scale-105 hover:rotate-1 transition-transform duration-300"
+          >
+            Join WhatsApp Groups <ArrowRight size={18} />
+          </motion.button>
+        </Link>
+
+        <Link to={"/about"}>
+          <motion.button
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold 
+            shadow-lg flex items-center gap-2 hover:scale-105 hover:-rotate-1 transition-transform duration-300"
+          >
+            Learn More
+          </motion.button>
+        </Link>
+      </div>
+
       {/* Announcements Section */}
       <div
         data-aos="fade-up"
@@ -63,6 +95,12 @@ const Home = () => {
       >
         <AnnouncementSection />
       </div>
+
+      {/* ...existing content... */}
+
+      <StatsSection  />
+
+      {/* ...rest of the page... */}
 
       {/* Why Choose Card */}
       <div
@@ -81,29 +119,6 @@ const Home = () => {
           <li>🔒 Reliable & Secure Platform for All Educational Updates</li>
           <li>🚀 User-Friendly Interface for Faster Information Access</li>
         </ul>
-      </div>
-
-      {/* Call-to-Action Buttons */}
-      <div
-        data-aos="fade-up"
-        data-aos-delay="500"
-        className="flex flex-wrap gap-4"
-      >
-        <motion.button
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-semibold 
-          shadow-lg flex items-center gap-2 hover:scale-105 hover:rotate-1 transition-transform duration-300"
-        >
-          Get Started <ArrowRight size={18} />
-        </motion.button>
-
-        <Link to={"/about"}>
-          <motion.button
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold 
-            shadow-lg flex items-center gap-2 hover:scale-105 hover:-rotate-1 transition-transform duration-300"
-          >
-            Learn More
-          </motion.button>
-        </Link>
       </div>
     </div>
   );

@@ -46,11 +46,9 @@ export const signup = async (req, res) => {
     // });
 
     // Send OTP email
-    await sendMail(
-      "Verify Your Email OTP",
-      `<h3>Your OTP is: ${otp}</h3><p>It expires in 10 minutes.</p>`,
-      email
-    );
+    const subject = "Verify Your Email Address - StudySpotlight";
+    const message = `<div style="font-family: Arial, sans-serif; margin: 0; padding: 0;"><div style="max-width: 600px; margin: 30px auto; padding: 30px; border-radius: 6px; border: 1px solid #ddd;"><h2 style="color: #2c3e50; margin-top: 0;">Email Verification - StudySpotlight</h2><p style="font-size: 16px; color: #333333; line-height: 1.6;">Dear ${name},</p><p style="font-size: 16px; color: #333333; line-height: 1.6;">Thank you for registering with <strong>StudySpotlight</strong>. To complete your registration, please verify your email address by entering the One-Time Password (OTP) provided below.</p><!-- ATTRACTIVE OTP BOX --><div style="background-color: #f0f6ff; border: 1px solid #b3d7ff; padding: 30px; border-radius: 8px; text-align: center; margin: 30px 0;"><p style="font-size: 18px; color: #2c3e50; margin: 0 0 10px 0;">Your OTP is</p><div style="font-size: 36px; font-weight: bold; color: #0056b3; letter-spacing: 6px; padding: 12px 20px; background-color: #e6f0ff; border-radius: 6px; display: inline-block;">${otp}</div></div><p style="font-size: 16px; color: #333333; line-height: 1.6;">Please enter this OTP on the verification page to confirm your email address. This step is essential to activate your account and access all the features of <strong>StudySpotlight</strong>.</p><p style="font-size: 16px; color: #333333; line-height: 1.6;">If you did not request this registration or have any issues, please contact our support team immediately.</p><p style="font-size: 14px; color: #777777; text-align: center; margin-top: 40px;">Best regards,<br>Gaurav<br>StudySpotlight Support Team</p></div></div>`;
+    await sendMail(subject, message, email );
 
     const newUser = await User.updateOne(
       { email },
@@ -93,11 +91,10 @@ export const forgotPassword = async (req, res) => {
     user.otpExpires = otpExpires;
     await user.save();
 
-    await sendMail(
-      "Password Reset OTP",
-      `<h3>Your OTP for password reset is: ${otp}</h3><p>It expires in 10 minutes.</p>`,
-      email
-    );
+    const subject = "Password Reset Request"; 
+    const message =  `<div style="font-family: Arial, sans-serif; margin: 0; padding: 0;"><div style="max-width: 600px; margin: 30px auto; padding: 30px; border-radius: 6px; border: 1px solid #ddd;"><h2 style="color: #2c3e50; margin-top: 0;">Password Reset Request</h2><p style="font-size: 16px; color: #333333; line-height: 1.6;">Dear ${user.name},</p><p style="font-size: 16px; color: #333333; line-height: 1.6;">We received a request to reset the password for your account. If you did not request a password reset, you can safely ignore this email.</p><p style="font-size: 16px; color: #333333; line-height: 1.6;">If you did request a reset, please use the <strong>One-Time Password (OTP)</strong> below to proceed:</p><!-- ATTRACTIVE OTP BOX --><div style="background-color: #f0f6ff; border: 1px solid #b3d7ff; padding: 30px; border-radius: 8px; text-align: center; margin: 30px 0;"><p style="font-size: 18px; color: #2c3e50; margin: 0 0 10px 0;">Your OTP is</p><div style="font-size: 36px; font-weight: bold; color: #0056b3; letter-spacing: 6px; padding: 12px 20px; background-color: #e6f0ff; border-radius: 6px; display: inline-block;">${otp}</div><p style="font-size: 14px; color: #666666; margin-top: 12px;">(This OTP is valid for the next 5 minutes)</p></div><p style="font-size: 16px; color: #333333; line-height: 1.6;">For security reasons, please do not share this OTP with anyone. Once expired, you'll need to request a new one.</p><p style="font-size: 16px; color: #333333; line-height: 1.6;">If you need help or face any issues, feel free to reach out to our support team.</p><p style="font-size: 16px; color: #333333; line-height: 1.6;">Website: <a href="https://sr-shields.vercel.app/" style="color: #007BFF; text-decoration: none;">Click here</a></p><p style="font-size: 14px; color: #777777; text-align: center; margin-top: 40px;">Best regards,<br>StudySpotlight Support Team</p></div></div>`;
+
+    await sendMail(subject, message, email)
 
     res.json({ message: "OTP sent to your email" });
   } catch (err) {

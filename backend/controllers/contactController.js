@@ -16,7 +16,7 @@ export const contactForm = async (req, res) => {
     }
 
     // Email subject and HTML message
-    const subject = "Query Regarding StudySpotlight";
+    const subject = "Query Regarding";
     const htmlMessage = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 30px auto; padding: 30px; border-radius: 6px; border: 1px solid #ddd; background-color: #ffffff;">
         <h2 style="color: #2c3e50; margin-top: 0;">User Query Submission</h2>

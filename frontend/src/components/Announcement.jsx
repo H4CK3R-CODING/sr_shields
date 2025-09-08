@@ -64,31 +64,31 @@ const AnnouncementSection = () => {
           className="flex flex-col gap-4 animate-vertical-scroll"
           style={{ animationPlayState: isPaused ? "paused" : "running" }}
         >
-          {loading
-            ? Array(5)
-                .fill(0)
-                .map((_, idx) => <Skeleton key={idx} />)
-            : announcements.length > 0
-            ? [...announcements, ...announcements].map((item, index) => (
-                <motion.a
-                  key={item._id + "_" + index}
-                  href={`/announcement/${item._id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+          {loading ? (
+            Array(5)
+              .fill(0)
+              .map((_, idx) => <Skeleton key={idx} />)
+          ) : announcements.length > 0 ? (
+            [...announcements, ...announcements].map((item, index) => (
+              <motion.div
+                key={item._id + "_" + index}
+                whileHover={{
+                  scale: 1.05,
+                  rotateX: 6,
+                  rotateY: -6,
+                  boxShadow: "0px 12px 30px rgba(59,130,246,0.6)",
+                }}
+                whileTap={{ scale: 0.96 }}
+                data-aos={index % 2 === 0 ? "fade-right" : "fade-left"}
+                data-aos-delay={index * 100}
+              >
+                <Link
+                  to={`/announcement/${item._id}`}
                   className={`block p-6 rounded-2xl relative
-                  bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500
-                  dark:from-blue-700 dark:via-indigo-800 dark:to-purple-700
-                  text-white font-semibold shadow-lg
-                  hover:shadow-2xl transition-all duration-500 cursor-pointer`}
-                  whileHover={{
-                    scale: 1.05,
-                    rotateX: 6,
-                    rotateY: -6,
-                    boxShadow: "0px 12px 30px rgba(59,130,246,0.6)",
-                  }}
-                  whileTap={{ scale: 0.96 }}
-                  data-aos={index % 2 === 0 ? "fade-right" : "fade-left"}
-                  data-aos-delay={index * 100}
+      bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500
+      dark:from-blue-700 dark:via-indigo-800 dark:to-purple-700
+      text-white font-semibold shadow-lg
+      hover:shadow-2xl transition-all duration-500 cursor-pointer`}
                 >
                   <motion.div
                     className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400/30 to-pink-500/30 blur-xl opacity-0"
@@ -96,11 +96,17 @@ const AnnouncementSection = () => {
                     transition={{ duration: 0.4 }}
                   />
                   <span className="relative z-10">{item.title}</span>
-                </motion.a>
-              ))
-            : <p className="text-center text-gray-600 dark:text-gray-300 text-lg mt-8" data-aos="fade-up">
-                😔 No announcements found.
-              </p>}
+                </Link>
+              </motion.div>
+            ))
+          ) : (
+            <p
+              className="text-center text-gray-600 dark:text-gray-300 text-lg mt-8"
+              data-aos="fade-up"
+            >
+              😔 No announcements found.
+            </p>
+          )}
         </div>
 
         {/* Vertical Scroll CSS */}

@@ -14,7 +14,7 @@ function AuthButtons({ state, handleLogout, mobile = false, toggleMenu }) {
         </span>
 
         {/* Admin Panel */}
-        {state.user.role === "admin" && (
+        {/* {state.user.role === "admin" && (
           <Link
             to="/admin/dashboard"
             onClick={toggleMenu}
@@ -22,7 +22,7 @@ function AuthButtons({ state, handleLogout, mobile = false, toggleMenu }) {
           >
             Admin Panel
           </Link>
-        )}
+        )} */}
 
         {/* Logout */}
         <button
