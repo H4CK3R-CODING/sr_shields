@@ -16,17 +16,24 @@ export const useAuth = () => {
 
     // Start verifying with backend
     setState((prev) => ({ ...prev, loading: true }));
-    console.log(`${import.meta.env.VITE_BACKENDURL}`)
+    // console.log(`${import.meta.env.VITE_BACKENDURL}`)
 
     axios
       .get(`${import.meta.env.VITE_BACKENDURL}/api/v1/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        console.log(res)
-        setState({ user: res.data, loading: false });
+        // Check backend response: user must exist
+        // console.log(res.data)
+        if (res?.data) {
+          setState({ user: res?.data, loading: false });
+        } else {
+          localStorage.removeItem("token");
+          setState({ user: null, loading: false });
+        }
       })
       .catch(() => {
+        console.error("Auth failed:", err);
         localStorage.removeItem("token");
         setState({ user: null, loading: false });
       });
