@@ -84,7 +84,7 @@ const SignIn = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
         <h2 className="text-3xl font-bold mb-6 text-center">Welcome Back</h2>
 
         {/* ToggleUser for switching role */}
-        <div
+        {/* <div
           onClickCapture={(e) => {
             if (
               e.target.innerText.toLowerCase() === "user" ||
@@ -95,7 +95,7 @@ const SignIn = ({ isLoggedIn, setIsLoggedIn, setUserId, setActiveUser }) => {
           }}
         >
           <ToggleUser />
-        </div>
+        </div> */}
 
         {/* Form */}
         <form className="space-y-4">
