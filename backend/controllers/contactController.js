@@ -20,7 +20,7 @@ export const contactForm = async (req, res) => {
     const htmlMessage = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 30px auto; padding: 30px; border-radius: 6px; border: 1px solid #ddd; background-color: #ffffff;">
         <h2 style="color: #2c3e50; margin-top: 0;">User Query Submission</h2>
-        <p style="font-size: 16px; color: #333;">Dear <strong>StudySpotlight Team</strong>,</p>
+        <p style="font-size: 16px; color: #333;">Dear <strong>✪Mʀ.SR's🛡️Sʜɪᴇʟᴅ CℽBer Cᴀғᴇ☆ Team</strong>,</p>
         <p style="font-size: 16px; color: #333;">You have received a new query from a user. Below are the details:</p>
         <table style="width: 100%; border-collapse: collapse; font-size: 16px; color: #333; margin: 20px 0;">
           <tr>
@@ -36,7 +36,7 @@ export const contactForm = async (req, res) => {
           <p style="margin: 0; font-size: 16px; color: #333;"><strong>Message:</strong></p>
           <p style="margin: 10px 0 0 0; font-size: 16px; color: #333; line-height: 1.6;">${message}</p>
         </div>
-        <p style="font-size: 14px; color: #777; text-align: center; margin-top: 40px;">StudySpotlight Contact Form System</p>
+        <p style="font-size: 14px; color: #777; text-align: center; margin-top: 40px;">✪Mʀ.SR's🛡️Sʜɪᴇʟᴅ CℽBer Cᴀғᴇ☆ Contact Form System</p>
       </div>
     `;
 

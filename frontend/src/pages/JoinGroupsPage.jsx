@@ -35,7 +35,7 @@ const JoinGroupsPage = () => {
       <div className="grid sm:grid-cols-2 gap-6">
         {/* Group 1 */}
         <a
-          href="https://chat.whatsapp.com/YOUR_GROUP_LINK_1"
+          href="https://chat.whatsapp.com/Jai7Og5vDl1LFnphP40C6k?mode=ems_copy_t"
           target="_blank"
           rel="noopener noreferrer"
           data-aos="zoom-in"
@@ -53,7 +53,7 @@ const JoinGroupsPage = () => {
 
         {/* Group 2 */}
         <a
-          href="https://chat.whatsapp.com/YOUR_GROUP_LINK_2"
+          href="https://chat.whatsapp.com/KzrLGtYKEIl3SsJvAYOGFV?mode=ems_copy_t"
           target="_blank"
           rel="noopener noreferrer"
           data-aos="zoom-in"

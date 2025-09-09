@@ -53,10 +53,10 @@ function Navbar({ theme, setTheme }) {
           <Logo />
 
           {/* Center - Nav Links (only on lg and up) */}
-          <div className="hidden lg:flex items-center gap-6">
-            <NavLinks />
-            <AuthButtons state={state} handleLogout={handleLogout} />
-          </div>
+          <div className="hidden xl:flex items-center gap-6 flex-wrap">
+  <NavLinks />
+  <AuthButtons state={state} handleLogout={handleLogout} />
+</div>
 
           {/* Right Side - Theme + Socials + Hamburger */}
           <div className="flex items-center gap-3">
@@ -65,15 +65,15 @@ function Navbar({ theme, setTheme }) {
               <SocialLinks />
             </div>
 
-            {/* Hamburger (only on < lg) */}
-            <div className="lg:hidden">
-              <button
-                onClick={toggleMenu}
-                className="p-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-white/40 dark:hover:bg-black/40 transition"
-              >
-                {isOpen ? <X size={26} /> : <Menu size={26} />}
-              </button>
-            </div>
+            {/* Show hamburger menu between lg and xl */}
+<div className="flex xl:hidden">
+  <button
+    onClick={toggleMenu}
+    className="p-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-white/40 dark:hover:bg-black/40 transition"
+  >
+    {isOpen ? <X size={26} /> : <Menu size={26} />}
+  </button>
+</div>
           </div>
         </div>
       </div>

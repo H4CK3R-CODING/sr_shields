@@ -3,6 +3,8 @@ import axios from "axios";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { FaPlus } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 import AnnouncementsList from "./AnnouncementsList";
 import Pagination from "./Pagination";
@@ -20,18 +22,19 @@ const AnnouncementsPage = () => {
   const [selectedAnnouncementId, setSelectedAnnouncementId] = useState(null);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
-  const {user} = useRecoilValue(authState);
+  const { user } = useRecoilValue(authState);
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
   }, []);
 
   useEffect(() => {
-    fetchAnnouncements();
-  }, [currentPage, filter, search]);
+    if (user) fetchAnnouncements();
+  }, [currentPage, filter, search, user]);
+
   // Refresh AOS whenever announcements change
   useEffect(() => {
-    AOS.refresh(); // ensures dynamically added elements animate
+    AOS.refresh();
   }, [announcements]);
 
   const fetchAnnouncements = async () => {
@@ -53,7 +56,7 @@ const AnnouncementsPage = () => {
       console.error("Failed to fetch announcements:", error);
     } finally {
       setLoading(false);
-      AOS.refresh(); // <-- refresh AOS after updating announcements
+      AOS.refresh();
     }
   };
 
@@ -84,6 +87,45 @@ const AnnouncementsPage = () => {
     }
   };
 
+  // 🚀 If user not logged in, show sign in prompt
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[70vh] px-4">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="p-10 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 text-white shadow-2xl text-center max-w-lg"
+        >
+          <motion.h2
+            initial={{ y: -30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-3xl font-bold mb-4"
+          >
+            🔒 Access Restricted
+          </motion.h2>
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-lg mb-6"
+          >
+            You must <span className="font-semibold">sign in</span> first to
+            view announcements and updates.
+          </motion.p>
+          <Link
+            to="/signin"
+            className="inline-block px-6 py-2 rounded-xl bg-white text-blue-600 font-semibold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+          >
+            Sign In Now
+          </Link>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // 🚀 Normal AnnouncementsPage content (when user is logged in)
   return (
     <div className="max-w-4xl mx-auto my-12 px-4 relative">
       <h1

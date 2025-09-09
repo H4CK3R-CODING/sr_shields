@@ -15,15 +15,15 @@ function NavLinks({ onClick }) {
   }, []);
 
   return (
-    <div className="flex flex-col lg:flex-row lg:space-x-6 space-y-4 lg:space-y-0 items-center">
+    <div className="flex flex-col xl:flex-row xl:flex-wrap xl:gap-6 gap-4 items-center">
       {links.map((item, index) => (
         <Link
           key={item}
           to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
           onClick={onClick}
-          className="relative text-gray-900 dark:text-gray-100 font-medium group transition transform hover:-translate-y-1 hover:scale-105 hover:text-blue-600 dark:hover:text-blue-300"
+          className="relative text-gray-900 dark:text-gray-100 font-medium group transition hover:-translate-y-1 hover:scale-105 hover:text-blue-600 dark:hover:text-blue-300"
           data-aos="fade-up"
-          data-aos-delay={index * 150} // staggered effect
+          data-aos-delay={index * 150}
         >
           {item}
           <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-blue-500 dark:bg-blue-300 transition-all group-hover:w-full"></span>

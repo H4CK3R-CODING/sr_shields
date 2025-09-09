@@ -7,7 +7,7 @@ import Announcement from "../models/Announcement.js";
 export const addAnnouncement = async (req, res) => {
   try {
     const announcement = await Announcement.create(req.body);
-    res.status(201).json({ success: true, data: announcement });
+    res.status(201).json({ success: true, message : "Added Successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -20,7 +20,7 @@ export const addAnnouncement = async (req, res) => {
 export const getAnnouncements = async (req, res) => {
   try {
     const { category, search, page = 1, limit = 10 } = req.query;
-    console.log(category, search, page , limit  )
+    // console.log(category, search, page , limit  )
     const filter = {};
     if (category) filter.category = category;
     if (search) filter.title = { $regex: search, $options: "i" };
