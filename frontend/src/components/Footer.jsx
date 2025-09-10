@@ -70,15 +70,15 @@ const Footer = () => {
               { name: "Contact Us", link: "/contact" },
             ].map((item, idx) => (
               <li key={idx}>
-                <a
-                  href={item.link}
+                <Link
+                  to={item.link}
                   className="group relative inline-block font-medium"
                 >
                   <span className="relative z-10 transition-colors duration-300 group-hover:text-blue-500 dark:group-hover:text-blue-400">
                     {item.name}
                   </span>
                   <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-blue-500 dark:bg-blue-400 transition-all duration-300 group-hover:w-full"></span>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
