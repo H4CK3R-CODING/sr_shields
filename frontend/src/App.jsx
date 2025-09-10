@@ -64,7 +64,7 @@ function App() {
 
     // if no token, stop loading and keep user null
     if (!token) {
-      setLoading(true);
+      setLoading(false);
       return;
     }
 
