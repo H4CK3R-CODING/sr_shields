@@ -43,7 +43,7 @@ function Navbar({ theme, setTheme }) {
 
   return (
     <nav
-      className={`fixed top-4 left-1/2 transform -translate-x-1/2 w-[95%] lg:w-[80%] z-50 transition-transform duration-500 ${
+      className={`fixed top-4 left-1/2 transform -translate-x-1/2 w-[95%] lg:w-[80%] z-40 transition-transform duration-500 ${
         visible ? "translate-y-0" : "-translate-y-[120%]"
       }`}
     >
