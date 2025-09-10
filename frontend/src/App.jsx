@@ -22,6 +22,7 @@ import SetPassword from "./components/ForgetPass/SetPassword";
 import JoinGroupsPage from "./pages/JoinGroupsPage";
 import axios from "axios";
 import FlashScreen from "./pages/FlashScreen";
+import Model from "./components/Model";
 
 
 
@@ -58,6 +59,10 @@ function App() {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // start with loading
+  const [showModal, setShowModal] = useState(true);
+  const closeModel = () => {
+    setShowModal(false);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -97,6 +102,9 @@ function App() {
 
   return (
     <>
+
+      {!user && <Model
+       show={showModal} closeFun={closeModel} />}
       {/* Scroll to top on route change */}
       <ScrollToTop />
 
