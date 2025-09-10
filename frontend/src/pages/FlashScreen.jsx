@@ -2,6 +2,8 @@ import React from "react";
 import Lottie from "lottie-react";
 import { motion } from "framer-motion";
 import rocketAnimation from "../assets/rocket.json"; // Lottie file
+// import flashAnimation from "../assets/flash.json"
+import flashAnimation from "../assets/flashing.json"
 
 const FlashScreen = () => {
   return (
@@ -48,7 +50,7 @@ const FlashScreen = () => {
           className="drop-shadow-[0_0_25px_rgba(255,255,255,0.8)]"
         >
           <Lottie
-            animationData={rocketAnimation}
+            animationData={flashAnimation}
             loop={true}
             style={{ height: 260, width: 260 }}
           />
@@ -64,7 +66,7 @@ const FlashScreen = () => {
       >
         <motion.span
           animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          transition={{ duration: 1, repeat: Infinity }}
         >
           Launching...
         </motion.span>
