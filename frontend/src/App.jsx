@@ -20,6 +20,8 @@ import Developer from "./pages/Developer";
 import ForgetPass from "./components/ForgetPass/ForgetPass";
 import SetPassword from "./components/ForgetPass/SetPassword";
 import JoinGroupsPage from "./pages/JoinGroupsPage";
+import axios from "axios";
+import FlashScreen from "./pages/FlashScreen";
 
 
 
@@ -53,8 +55,48 @@ function App() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
+
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // start with loading
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    // if no token, stop loading and keep user null
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    // call backend to check if token is valid
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKENDURL}/api/v1/auth/me`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setUser(res.data); // ✅ logged in
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        localStorage.removeItem("token");
+        setUser(null); // ❌ not logged in
+      } finally {
+        setLoading(false); // stop loading either way
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // show loader while checking auth
+  if (loading) {
+    return (
+      <FlashScreen/>
+    );
+  }
+
   return (
-    <Router>
+    <>
       {/* Scroll to top on route change */}
       <ScrollToTop />
 
@@ -98,7 +140,7 @@ function App() {
         {/* Footer */}
         <Footer />
       </div>
-    </Router>
+    </>
   );
 }
 
