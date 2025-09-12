@@ -48,6 +48,7 @@ const AnnouncementsPage = () => {
       };
       const { data } = await axios.get(
         `${import.meta.env.VITE_BACKENDURL}/api/v1/announcement`,
+        {headers: {"Authorization": `Bearer ${token}`}},
         { params, withCredentials: true }
       );
       setAnnouncements(data.data || []);
@@ -78,6 +79,7 @@ const AnnouncementsPage = () => {
       try {
         await axios.delete(
           `${import.meta.env.VITE_BACKENDURL}/api/v1/announcement/${id}`,
+          {headers: {"Authorization": `Bearer ${token}`}},
           { withCredentials: true }
         );
         fetchAnnouncements();

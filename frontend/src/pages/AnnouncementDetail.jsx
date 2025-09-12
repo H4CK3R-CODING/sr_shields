@@ -75,7 +75,7 @@ const AnnouncementDetail = () => {
       </span>
 
       {/* Content */}
-      <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line text-lg leading-relaxed border-l-4 border-blue-400 dark:border-blue-500 pl-4 py-2 mb-6">
+      <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line text-lg leading-relaxed border-l-4 border-blue-400 dark:border-blue-500 pl-4 py-2 mb-6 text-wrap">
         {announcement.content}
       </p>
 
