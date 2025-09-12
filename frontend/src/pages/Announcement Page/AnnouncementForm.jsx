@@ -130,12 +130,12 @@ const AnnouncementForm = ({ onClose, mode, announcementId, onSuccess }) => {
           : `${import.meta.env.VITE_BACKENDURL}/api/v1/announcement`;
 
       const method = mode === "edit" ? "put" : "post";
-
+            const token = localStorage.getItem("token");
       const { data } = await axios({
         method,
         url,
         data: finalData,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json","Authorization": `Bearer ${token}` },
         withCredentials: true,
       });
 
