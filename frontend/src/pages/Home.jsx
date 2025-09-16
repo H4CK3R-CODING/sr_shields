@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import StatsSection from "../components/StatsSection";
+import ImportantLinksSection from "../components/ImportantLinksSection";
 
 // Animation variants for framer-motion (optional)
 const fadeInUp = {
@@ -94,6 +95,14 @@ const Home = () => {
         className="w-full flex justify-center mt-8"
       >
         <AnnouncementSection />
+      </div>
+
+      <div
+        data-aos="fade-up"
+        data-aos-delay="300"
+        className="w-full flex justify-center mt-8"
+      >
+        <ImportantLinksSection />
       </div>
 
       {/* ...existing content... */}

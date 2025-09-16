@@ -23,7 +23,7 @@ const AnnouncementsPage = () => {
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const { user } = useRecoilValue(authState);
-
+ const token = localStorage.getItem("token");
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
   }, []);
