@@ -31,12 +31,14 @@ const Home = () => {
 
   return (
     <div className="min-h-screen mt-20 flex flex-col items-center text-center px-6 space-y-10 transition-colors duration-500">
+      <div className="w-full flex flex-col justify-center items-center text-center px-4 py-10">
       {/* Heading */}
       <motion.h2
-        data-aos="fade-down"
-        data-aos-delay="100"
-        className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 
-        dark:from-sky-300 dark:via-indigo-300 dark:to-purple-400 bg-clip-text text-transparent drop-shadow-lg"
+        data-aos="zoom-in"
+        className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold 
+        bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 
+        dark:from-sky-300 dark:via-indigo-300 dark:to-purple-400 
+        bg-clip-text text-transparent drop-shadow-lg leading-snug"
       >
         Welcoϻe 𝐓𝐨 <span className="italic">✪Mʀ.SR's🛡️Sʜɪᴇʟᴅ CℽBer Cᴀғᴇ☆</span>
       </motion.h2>
@@ -45,7 +47,8 @@ const Home = () => {
       <motion.p
         data-aos="fade-up"
         data-aos-delay="200"
-        className="max-w-2xl text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed"
+        className="max-w-2xl mt-4 text-base sm:text-lg md:text-xl text-gray-700 
+        dark:text-gray-300 leading-relaxed mx-auto"
       >
         Explore our services, learn new skills, and stay ahead with technology.
         Join us on a journey of{" "}
@@ -64,15 +67,19 @@ const Home = () => {
       </motion.p>
 
       {/* Call-to-Action Buttons */}
-      <div
+      <motion.div
         data-aos="fade-up"
         data-aos-delay="500"
-        className="flex flex-wrap gap-4"
+        className="flex flex-wrap justify-center gap-4 mt-6"
       >
         <Link to={"/join"}>
           <motion.button
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-semibold 
-          shadow-lg flex items-center gap-2 hover:scale-105 hover:rotate-1 transition-transform duration-300"
+            whileHover={{ scale: 1.07, rotate: 1 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+            bg-gradient-to-r from-sky-500 to-indigo-500 
+            text-white font-semibold shadow-lg flex items-center gap-2 
+            transition-all duration-300"
           >
             Join WhatsApp Groups <ArrowRight size={18} />
           </motion.button>
@@ -80,13 +87,18 @@ const Home = () => {
 
         <Link to={"/about"}>
           <motion.button
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold 
-            shadow-lg flex items-center gap-2 hover:scale-105 hover:-rotate-1 transition-transform duration-300"
+            whileHover={{ scale: 1.07, rotate: -1 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+            bg-gradient-to-r from-purple-500 to-indigo-500 
+            text-white font-semibold shadow-lg flex items-center gap-2 
+            transition-all duration-300"
           >
             Learn More
           </motion.button>
         </Link>
-      </div>
+      </motion.div>
+    </div>
 
       {/* Announcements Section */}
       <div
