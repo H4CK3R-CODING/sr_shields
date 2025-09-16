@@ -23,6 +23,8 @@ import JoinGroupsPage from "./pages/JoinGroupsPage";
 import axios from "axios";
 import FlashScreen from "./pages/FlashScreen";
 import Model from "./components/Model";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { authState } from "./recoil/globalAtom";
 
 
 
@@ -59,6 +61,7 @@ function App() {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // start with loading
+  const [state, setState] = useRecoilState(authState)
   const [showModal, setShowModal] = useState(true);
   const closeModel = () => {
     setShowModal(false);
@@ -81,6 +84,7 @@ function App() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setUser(res.data); // ✅ logged in
+        setState({user: res.data, loading: false})
       } catch (err) {
         console.error("Auth check failed:", err);
         localStorage.removeItem("token");

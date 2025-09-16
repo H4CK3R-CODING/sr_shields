@@ -4,12 +4,11 @@ import "aos/dist/aos.css";
 import { useInView } from "react-intersection-observer";
 import axios from "axios";
 
-/** AnimatedNumber: animates from 0 -> value when the element comes into view */
+/** AnimatedNumber: animates from 0 -> value when visible */
 const AnimatedNumber = ({ value = 0, duration = 1500 }) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
-    threshold: 0.6,
-    rootMargin: "0px 0px -100px 0px",
+    threshold: 0.5,
   });
 
   const [current, setCurrent] = useState(0);
@@ -71,26 +70,34 @@ const StatsSection = () => {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto my-16 px-6">
+    <div className="w-full max-w-4xl mx-auto my-12 px-4 sm:px-6">
+      {/* Heading */}
       <h2
-        className="text-5xl font-bold text-center mb-10 text-blue-600 dark:text-blue-400"
+        className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-10 
+        bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 
+        dark:from-sky-300 dark:via-indigo-300 dark:to-purple-400 
+        bg-clip-text text-transparent"
         data-aos="fade-down"
       >
         Our Community in Numbers
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-center">
         {stats.map((item, index) => (
           <div
             key={index}
-            className="p-6 rounded-2xl shadow-lg bg-gradient-to-r 
-                       from-indigo-500 via-blue-500 to-purple-500
+            className="relative group p-6 rounded-2xl shadow-xl 
+                       bg-gradient-to-br from-indigo-500 via-blue-500 to-purple-500 
                        dark:from-indigo-700 dark:via-blue-700 dark:to-purple-700
-                       text-white"
+                       text-white overflow-hidden"
             data-aos="zoom-in"
             data-aos-delay={index * 150}
           >
-            <h3 className="text-4xl font-extrabold mb-2">
+            {/* Glow Effect */}
+            <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-all duration-300 rounded-2xl"></div>
+
+            <h3 className="relative text-3xl sm:text-4xl font-extrabold mb-1">
               {loading ? (
                 <span className="animate-pulse">0</span>
               ) : (
@@ -98,7 +105,9 @@ const StatsSection = () => {
               )}
               +
             </h3>
-            <p className="text-lg font-medium">{item.label}</p>
+            <p className="relative text-base sm:text-lg font-medium opacity-90">
+              {item.label}
+            </p>
           </div>
         ))}
       </div>

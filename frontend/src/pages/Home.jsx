@@ -30,7 +30,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen mt-20 flex flex-col items-center text-center px-6 space-y-10 transition-colors duration-500">
+    <div className="min-h-screen flex flex-col items-center text-center px-6 space-y-10 transition-colors duration-500">
       <div className="w-full flex flex-col justify-center items-center text-center px-4 py-10">
       {/* Heading */}
       <motion.h2
