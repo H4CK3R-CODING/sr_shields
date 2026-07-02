@@ -25,6 +25,7 @@ import FlashScreen from "./pages/FlashScreen";
 import Model from "./components/Model";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { authState } from "./recoil/globalAtom";
+import Receipt from "./pages/Receipt";
 
 
 
@@ -136,6 +137,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/join" element={<JoinGroupsPage />} />
             <Route path="/announcements" element={<AnnouncementsPage />} />
+            <Route path="/receipt" element={<Receipt />} />
             
             <Route
               path="/announcement/:id"
