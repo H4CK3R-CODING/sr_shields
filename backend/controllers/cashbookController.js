@@ -636,3 +636,51 @@ export const getCashbook = async (
     });
   }
 };
+
+// ============================================================
+// DELETE TRANSACTION
+// ============================================================
+
+export const deleteTransaction = async (
+  req,
+  res
+) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Transaction ID is required.",
+      });
+    }
+
+    const transaction =
+      await Transaction.findById(id);
+
+    if (!transaction) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found.",
+      });
+    }
+
+    await Transaction.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Transaction deleted successfully.",
+    });
+
+  } catch (error) {
+    console.error(
+      "Delete transaction error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete transaction.",
+    });
+  }
+};

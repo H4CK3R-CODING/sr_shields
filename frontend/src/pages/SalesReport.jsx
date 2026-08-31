@@ -3,6 +3,9 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import {
+  Trash2,
+} from "lucide-react";
 
 import { motion } from "framer-motion";
 
@@ -732,6 +735,60 @@ const handleCustomDateApply = async () => {
     sales,
     appliedSearch,
   ]);
+
+
+  // ============================================================
+// DELETE TRANSACTION
+// ============================================================
+
+const handleDeleteTransaction = async (transactionId) => {
+  if (!transactionId) {
+    toast.error("Transaction ID not found.");
+    return;
+  }
+
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this transaction?"
+  );
+
+  if (!confirmDelete) {
+    return;
+  }
+
+  try {
+    const { data } = await axios.delete(
+      `${import.meta.env.VITE_BACKENDURL}/api/v1/cashbook/${transactionId}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    if (data?.success) {
+      toast.success(
+        data.message ||
+          "Transaction deleted successfully."
+      );
+
+      // Reload the Sales Report
+      await fetchReport();
+    } else {
+      toast.error(
+        data?.message ||
+          "Failed to delete transaction."
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Delete transaction error:",
+      error
+    );
+
+    toast.error(
+      error.response?.data?.message ||
+        "❌ Failed to delete transaction."
+    );
+  }
+};
 
 
   // ============================================================
@@ -2728,138 +2785,54 @@ const graphData = useMemo(() => {
                 =========================================== */}
 
                 <thead>
+  <tr
+    className="
+      border-b
+      border-gray-700
+      bg-gray-900/40
+    "
+  >
+    <th className="px-5 py-4 text-left">
+      #
+    </th>
 
-                  <tr
-                    className="
-                      bg-gray-50
-                      dark:bg-gray-900
-                      border-b
-                      border-gray-200
-                      dark:border-gray-700
-                    "
-                  >
+    <th className="px-5 py-4 text-left">
+      Invoice
+    </th>
 
-                    <th
-                      className="
-                        px-5
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                        text-gray-600
-                        dark:text-gray-300
-                      "
-                    >
-                      #
-                    </th>
+    <th className="px-5 py-4 text-left">
+      Customer
+    </th>
 
+    <th className="px-5 py-4 text-left">
+      Date
+    </th>
 
-                    <th
-                      className="
-                        px-5
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                      "
-                    >
-                      Invoice
-                    </th>
+    <th className="px-5 py-4 text-left">
+      Items
+    </th>
 
+    <th className="px-5 py-4 text-left">
+      Payment
+    </th>
 
-                    <th
-                      className="
-                        px-5
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                      "
-                    >
-                      Customer
-                    </th>
+    <th className="px-5 py-4 text-right">
+      Total
+    </th>
 
+    <th className="px-5 py-4 text-right">
+      Paid
+    </th>
 
-                    <th
-                      className="
-                        px-5
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                      "
-                    >
-                      Date
-                    </th>
+    {/* <th className="px-5 py-4 text-right">
+      Unpaid
+    </th> */}
 
-
-                    <th
-                      className="
-                        px-5
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                      "
-                    >
-                      Items
-                    </th>
-
-
-                    <th
-                      className="
-                        px-5
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                      "
-                    >
-                      Payment
-                    </th>
-
-
-                    <th
-                      className="
-                        px-5
-                        py-4
-                        text-right
-                        text-sm
-                        font-semibold
-                      "
-                    >
-                      Total
-                    </th>
-
-
-                    <th
-                      className="
-                        px-5
-                        py-4
-                        text-right
-                        text-sm
-                        font-semibold
-                      "
-                    >
-                      Paid
-                    </th>
-
-
-                    <th
-                      className="
-                        px-5
-                        py-4
-                        text-right
-                        text-sm
-                        font-semibold
-                      "
-                    >
-                      Unpaid
-                    </th>
-
-                  </tr>
-
-                </thead>
+    <th className="px-5 py-4 text-center">
+      Action
+    </th>
+  </tr>
+</thead>
 
 
                 {/* ==========================================
@@ -3175,32 +3148,40 @@ const graphData = useMemo(() => {
                             UNPAID
                         ----------------------------------- */}
 
-                        <td
-                          className="
-                            px-5
-                            py-4
-                            text-right
-                          "
-                        >
-
-                          <p
-                            className={
-                              Number(
-                                sale.unpaidAmount ||
-                                  0
-                              ) > 0
-                                ? "font-bold text-red-500"
-                                : "font-semibold text-gray-500"
-                            }
-                          >
-                            ₹{" "}
-                            {formatAmount(
-                              sale.unpaidAmount ||
-                                0
-                            )}
-                          </p>
-
-                        </td>
+                        <td className="px-5 py-4 text-center">
+  <button
+    type="button"
+    onClick={() =>
+      handleDeleteTransaction(
+        sale._id
+      )
+    }
+    className="
+      w-9
+      h-9
+      rounded-lg
+      inline-flex
+      items-center
+      justify-center
+      text-red-500
+      bg-red-500/10
+      hover:bg-red-500
+      hover:text-white
+      border
+      border-red-500/20
+      hover:border-red-500
+      transition-all
+      duration-200
+      active:scale-90
+    "
+    title="Delete transaction"
+  >
+    <Trash2
+      size={17}
+      strokeWidth={2}
+    />
+  </button>
+</td>
 
                       </tr>
 

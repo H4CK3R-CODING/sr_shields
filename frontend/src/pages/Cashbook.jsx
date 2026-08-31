@@ -3,6 +3,10 @@ import { motion } from "framer-motion";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import axios from "axios";
+import {
+  Trash2,
+  RefreshCw,
+} from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 
 const Cashbook = () => {
@@ -181,7 +185,56 @@ const Cashbook = () => {
     }
   };
 
+  // ============================================================
+// DELETE TRANSACTION
+// ============================================================
 
+const handleDeleteTransaction = async (transactionId) => {
+  if (!transactionId) {
+    toast.error("Transaction ID not found.");
+    return;
+  }
+
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this transaction?"
+  );
+
+  if (!confirmDelete) {
+    return;
+  }
+
+  try {
+    const { data } = await axios.delete(
+      `${import.meta.env.VITE_BACKENDURL}/api/v1/cashbook/${transactionId}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    if (data?.success) {
+      toast.success(
+        data.message || "Transaction deleted successfully."
+      );
+
+      // Refresh cashbook
+      await fetchCashbook();
+    } else {
+      toast.error(
+        data?.message || "Failed to delete transaction."
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Delete transaction error:",
+      error
+    );
+
+    toast.error(
+      error.response?.data?.message ||
+        "❌ Failed to delete transaction."
+    );
+  }
+};
   // ============================================================
   // INPUT CHANGE
   // ============================================================
@@ -1268,56 +1321,94 @@ const Cashbook = () => {
                     </div>
 
 
-                    {/* AMOUNT */}
+                    {/* RIGHT SIDE */}
 
-                    <div
-                      className="
-                        text-right
-                        flex-shrink-0
-                      "
-                    >
+<div
+  className="
+    flex
+    items-center
+    gap-3
+    flex-shrink-0
+  "
+>
 
-                      <p
-                        className={`
-                          text-lg
-                          sm:text-xl
-                          font-bold
-                          ${
-                            transaction.type ===
-                            "IN"
-                              ? "text-emerald-600"
-                              : "text-red-500"
-                          }
-                        `}
-                      >
+  {/* AMOUNT */}
 
-                        {transaction.type ===
-                        "IN"
-                          ? "+"
-                          : "-"}
+  <div className="text-right">
 
-                        ₹{" "}
+    <p
+      className={`
+        text-lg
+        sm:text-xl
+        font-bold
+        ${
+          transaction.type === "IN"
+            ? "text-emerald-600"
+            : "text-red-500"
+        }
+      `}
+    >
+      {transaction.type === "IN"
+        ? "+"
+        : "-"}
+      ₹{" "}
+      {formatAmount(
+        transaction.amount
+      )}
+    </p>
 
-                        {formatAmount(
-                          transaction.amount
-                        )}
+    <p
+      className="
+        text-xs
+        text-gray-400
+        mt-1
+      "
+    >
+      {formatDate(
+        transaction.date
+      )}
+    </p>
 
-                      </p>
+  </div>
 
 
-                      <p
-                        className="
-                          text-xs
-                          text-gray-400
-                          mt-1
-                        "
-                      >
-                        {formatDate(
-                          transaction.date
-                        )}
-                      </p>
+  {/* DELETE BUTTON */}
 
-                    </div>
+  <button
+    type="button"
+    onClick={() =>
+      handleDeleteTransaction(
+        transaction._id
+      )
+    }
+    className="
+      w-9
+      h-9
+      rounded-lg
+      flex
+      items-center
+      justify-center
+      text-red-500
+      bg-red-500/10
+      hover:bg-red-500
+      hover:text-white
+      border
+      border-red-500/20
+      transition-all
+      duration-200
+      active:scale-90
+    "
+    title="Delete transaction"
+  >
+
+    <Trash2
+      size={17}
+      strokeWidth={2}
+    />
+
+  </button>
+
+</div>
 
                   </div>
 
