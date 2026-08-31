@@ -68,49 +68,83 @@ const Home = () => {
 
       {/* Call-to-Action Buttons */}
       <motion.div
-        data-aos="fade-up"
-        data-aos-delay="500"
-        className="flex flex-wrap justify-center gap-4 mt-6"
-      >
-        <Link to={"/join"}>
-          <motion.button
-            whileHover={{ scale: 1.07, rotate: 1 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
-            bg-gradient-to-r from-sky-500 to-indigo-500 
-            text-white font-semibold shadow-lg flex items-center gap-2 
-            transition-all duration-300"
-          >
-            Join WhatsApp Groups <ArrowRight size={18} />
-          </motion.button>
-        </Link>
+  data-aos="fade-up"
+  data-aos-delay="500"
+  className="flex flex-wrap justify-center gap-4 mt-6"
+>
+  <Link to={"/join"}>
+    <motion.button
+      whileHover={{ scale: 1.07, rotate: 1 }}
+      whileTap={{ scale: 0.95 }}
+      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+      bg-gradient-to-r from-sky-500 to-indigo-500 
+      text-white font-semibold shadow-lg flex items-center gap-2 
+      transition-all duration-300"
+    >
+      Join WhatsApp Groups <ArrowRight size={18} />
+    </motion.button>
+  </Link>
 
-        <Link to={"/receipt"}>
-          <motion.button
-            whileHover={{ scale: 1.07, rotate: 1 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
-            bg-gradient-to-r from-pink-500 to-red-500 
-            text-white font-semibold shadow-lg flex items-center gap-2 
-            transition-all duration-300"
-          >
-            Generate Receipt <ArrowRight size={18} />
-          </motion.button>
-        </Link>
+  <Link to={"/receipt"}>
+    <motion.button
+      whileHover={{ scale: 1.07, rotate: 1 }}
+      whileTap={{ scale: 0.95 }}
+      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+      bg-gradient-to-r from-pink-500 to-red-500 
+      text-white font-semibold shadow-lg flex items-center gap-2 
+      transition-all duration-300"
+    >
+      Generate Receipt <ArrowRight size={18} />
+    </motion.button>
+  </Link>
 
-        <Link to={"/about"}>
-          <motion.button
-            whileHover={{ scale: 1.07, rotate: -1 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
-            bg-gradient-to-r from-purple-500 to-indigo-500 
-            text-white font-semibold shadow-lg flex items-center gap-2 
-            transition-all duration-300"
-          >
-            Learn More
-          </motion.button>
-        </Link>
-      </motion.div>
+  <Link to={"/about"}>
+    <motion.button
+      whileHover={{ scale: 1.07, rotate: -1 }}
+      whileTap={{ scale: 0.95 }}
+      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+      bg-gradient-to-r from-purple-500 to-indigo-500 
+      text-white font-semibold shadow-lg flex items-center gap-2 
+      transition-all duration-300"
+    >
+      Learn More
+    </motion.button>
+  </Link>
+
+  {/* ADD TRANSACTION */}
+  <Link to={"/cashbook"}>
+    <motion.button
+      whileHover={{ scale: 1.07, rotate: -1 }}
+      whileTap={{ scale: 0.95 }}
+      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+      bg-gradient-to-r from-emerald-500 to-teal-500 
+      hover:from-emerald-600 hover:to-teal-600
+      text-white font-semibold shadow-lg 
+      shadow-emerald-500/20
+      flex items-center gap-2 
+      transition-all duration-300"
+    >
+      Add Transaction
+    </motion.button>
+  </Link>
+
+  {/* SALES REPORT */}
+  <Link to={"/sales-report"}>
+    <motion.button
+      whileHover={{ scale: 1.07, rotate: -1 }}
+      whileTap={{ scale: 0.95 }}
+      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+      bg-gradient-to-r from-blue-600 to-cyan-500 
+      hover:from-blue-700 hover:to-cyan-600
+      text-white font-semibold shadow-lg 
+      shadow-blue-500/20
+      flex items-center gap-2 
+      transition-all duration-300"
+    >
+      View Sales Report
+    </motion.button>
+  </Link>
+</motion.div>
     </div>
 
       {/* Announcements Section */}

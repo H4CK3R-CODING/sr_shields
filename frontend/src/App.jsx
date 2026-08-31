@@ -26,6 +26,8 @@ import Model from "./components/Model";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { authState } from "./recoil/globalAtom";
 import Receipt from "./pages/Receipt";
+import Cashbook from "./pages/Cashbook";
+import SalesReport from "./pages/SalesReport";
 
 
 
@@ -144,6 +146,16 @@ function App() {
               element={<AnnouncementDetail />}
             />
             <Route path="/contact" element={<Contact />} />
+            <Route
+          path="/cashbook"
+          element={<Cashbook />}
+        />
+
+        <Route
+          path="/sales-report"
+          element={<SalesReport />}
+        />
+
             <Route path="/forgetpass" element={<ForgetPass />} />
             <Route path="/setPassword" element={<SetPassword />} />
             <Route path="/developer" element={<Developer />} />
