@@ -7,6 +7,8 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import StatsSection from "../components/StatsSection";
 import ImportantLinksSection from "../components/ImportantLinksSection";
+import { useRecoilValue } from "recoil";
+import { authState } from "../recoil/globalAtom";
 
 // Animation variants for framer-motion (optional)
 const fadeInUp = {
@@ -22,6 +24,10 @@ const Home = () => {
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
   }, []);
+  const { user } = useRecoilValue(authState);
+
+
+const userId = user?._id;
 
   const stats = [
     { label: "Active Users", value: 1240 },
