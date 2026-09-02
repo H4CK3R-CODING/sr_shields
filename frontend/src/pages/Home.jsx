@@ -32,138 +32,147 @@ const Home = () => {
   return (
     <div className="min-h-screen flex flex-col items-center text-center px-6 space-y-10 transition-colors duration-500">
       <div className="w-full flex flex-col justify-center items-center text-center px-4 py-10">
-      {/* Heading */}
-      <motion.h2
-        data-aos="zoom-in"
-        className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold 
+        {/* Heading */}
+        <motion.h2
+          data-aos="zoom-in"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold 
         bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 
         dark:from-sky-300 dark:via-indigo-300 dark:to-purple-400 
         bg-clip-text text-transparent drop-shadow-lg leading-snug"
-      >
-        Welcoϻe 𝐓𝐨 <span className="italic">✪Mʀ.SR's🛡️Sʜɪᴇʟᴅ CℽBer Cᴀғᴇ☆</span>
-      </motion.h2>
+        >
+          Welcoϻe 𝐓𝐨{" "}
+          <span className="italic">✪Mʀ.SR's🛡️Sʜɪᴇʟᴅ CℽBer Cᴀғᴇ☆</span>
+        </motion.h2>
 
-      {/* Subtext */}
-      <motion.p
-        data-aos="fade-up"
-        data-aos-delay="200"
-        className="max-w-2xl mt-4 text-base sm:text-lg md:text-xl text-gray-700 
+        {/* Subtext */}
+        <motion.p
+          data-aos="fade-up"
+          data-aos-delay="200"
+          className="max-w-2xl mt-4 text-base sm:text-lg md:text-xl text-gray-700 
         dark:text-gray-300 leading-relaxed mx-auto"
-      >
-        Explore our services, learn new skills, and stay ahead with technology.
-        Join us on a journey of{" "}
-        <span className="font-semibold text-blue-600 dark:text-blue-400">
-          knowledge
-        </span>
-        ,{" "}
-        <span className="font-semibold text-purple-600 dark:text-purple-400">
-          innovation
-        </span>
-        , and{" "}
-        <span className="font-semibold text-indigo-600 dark:text-indigo-400">
-          empowerment
-        </span>
-        .
-      </motion.p>
+        >
+          Explore our services, learn new skills, and stay ahead with
+          technology. Join us on a journey of{" "}
+          <span className="font-semibold text-blue-600 dark:text-blue-400">
+            knowledge
+          </span>
+          ,{" "}
+          <span className="font-semibold text-purple-600 dark:text-purple-400">
+            innovation
+          </span>
+          , and{" "}
+          <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+            empowerment
+          </span>
+          .
+        </motion.p>
 
-      {/* Call-to-Action Buttons */}
-      <motion.div
-  data-aos="fade-up"
-  data-aos-delay="500"
-  className="flex flex-wrap justify-center gap-4 mt-6"
->
-  <Link to={"/join"}>
-    <motion.button
-      whileHover={{ scale: 1.07, rotate: 1 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+        {/* Call-to-Action Buttons */}
+        <motion.div
+          data-aos="fade-up"
+          data-aos-delay="500"
+          className="flex flex-wrap justify-center gap-4 mt-6"
+        >
+          <Link to={"/join"}>
+            <motion.button
+              whileHover={{ scale: 1.07, rotate: 1 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
       bg-gradient-to-r from-sky-500 to-indigo-500 
       text-white font-semibold shadow-lg flex items-center gap-2 
       transition-all duration-300"
-    >
-      Join WhatsApp Groups <ArrowRight size={18} />
-    </motion.button>
-  </Link>
+            >
+              Join WhatsApp Groups <ArrowRight size={18} />
+            </motion.button>
+          </Link>
 
-  <Link to={"/receipt"}>
-    <motion.button
-      whileHover={{ scale: 1.07, rotate: 1 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+          <Link to={"/receipt"}>
+            <motion.button
+              whileHover={{ scale: 1.07, rotate: 1 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
       bg-gradient-to-r from-pink-500 to-red-500 
       text-white font-semibold shadow-lg flex items-center gap-2 
       transition-all duration-300"
-    >
-      Generate Receipt <ArrowRight size={18} />
-    </motion.button>
-  </Link>
+            >
+              Generate Receipt <ArrowRight size={18} />
+            </motion.button>
+          </Link>
 
-  <Link to={"/about"}>
-    <motion.button
-      whileHover={{ scale: 1.07, rotate: -1 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+          <Link to={"/about"}>
+            <motion.button
+              whileHover={{ scale: 1.07, rotate: -1 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
       bg-gradient-to-r from-purple-500 to-indigo-500 
       text-white font-semibold shadow-lg flex items-center gap-2 
       transition-all duration-300"
-    >
-      Learn More
-    </motion.button>
-  </Link>
+            >
+              Learn More
+            </motion.button>
+          </Link>
 
-  {/* ADD TRANSACTION */}
-  <Link to={"/cashbook"}>
-    <motion.button
-      whileHover={{ scale: 1.07, rotate: -1 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+          {/* ADD TRANSACTION */}
+          {userId === import.meta.env.VITE_CHIEF_ADMIN && (
+            <Link to={"/cashbook"}>
+              <motion.button
+                whileHover={{ scale: 1.07, rotate: -1 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
       bg-gradient-to-r from-emerald-500 to-teal-500 
       hover:from-emerald-600 hover:to-teal-600
       text-white font-semibold shadow-lg 
       shadow-emerald-500/20
       flex items-center gap-2 
       transition-all duration-300"
-    >
-      Add Transaction
-    </motion.button>
-  </Link>
+              >
+                Add Transaction
+              </motion.button>
+            </Link>
+          )}
 
-  {/* SALES REPORT */}
-  <Link to={"/sales-report"}>
-    <motion.button
-      whileHover={{ scale: 1.07, rotate: -1 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+          {/* SALES REPORT */}
+          {userId === import.meta.env.VITE_CHIEF_ADMIN && (
+            <Link to={"/sales-report"}>
+              <motion.button
+                whileHover={{ scale: 1.07, rotate: -1 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
       bg-gradient-to-r from-blue-600 to-cyan-500 
       hover:from-blue-700 hover:to-cyan-600
       text-white font-semibold shadow-lg 
       shadow-blue-500/20
       flex items-center gap-2 
       transition-all duration-300"
-    >
-      View Sales Report
-    </motion.button>
-  </Link>
+              >
+                View Sales Report
+              </motion.button>
+            </Link>
+          )}
 
-
-  {/* Notification Site */}
-  <a target="_blank" href="https://job-notify-bot.vercel.app/">
-    <motion.button
-      whileHover={{ scale: 1.07, rotate: -1 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
-      bg-gradient-to-r from-blue-600 to-cyan-500 
+          {userId === import.meta.env.VITE_CHIEF_ADMIN && (
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://job-notify-bot.vercel.app/"
+            >
+              <motion.button
+                whileHover={{ scale: 1.07, rotate: -1 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl
+      bg-gradient-to-r from-blue-600 to-cyan-500
       hover:from-blue-700 hover:to-cyan-600
-      text-white font-semibold shadow-lg 
+      text-white font-semibold shadow-lg
       shadow-blue-500/20
-      flex items-center gap-2 
+      flex items-center gap-2
       transition-all duration-300"
-    >
-      Send Notification Site
-    </motion.button>
-  </a>
-</motion.div>
-    </div>
+              >
+                Send Notification Site
+              </motion.button>
+            </a>
+          )}
+        </motion.div>
+      </div>
 
       {/* Announcements Section */}
       <div
@@ -184,7 +193,7 @@ const Home = () => {
 
       {/* ...existing content... */}
 
-      <StatsSection  />
+      <StatsSection />
 
       {/* ...rest of the page... */}
 
