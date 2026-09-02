@@ -144,6 +144,24 @@ const Home = () => {
       View Sales Report
     </motion.button>
   </Link>
+
+
+  {/* Notification Site */}
+  <a target="_blank" href="https://job-notify-bot.vercel.app/">
+    <motion.button
+      whileHover={{ scale: 1.07, rotate: -1 }}
+      whileTap={{ scale: 0.95 }}
+      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl 
+      bg-gradient-to-r from-blue-600 to-cyan-500 
+      hover:from-blue-700 hover:to-cyan-600
+      text-white font-semibold shadow-lg 
+      shadow-blue-500/20
+      flex items-center gap-2 
+      transition-all duration-300"
+    >
+      Send Notification Site
+    </motion.button>
+  </a>
 </motion.div>
     </div>
 
