@@ -5,6 +5,9 @@ import { contactForm } from "../controllers/contactController.js";
 import countController from "../controllers/countController.js";
 import cashbookRoutes from "./cashbookRoutes.js";
 import salesReportRoutes from "./salesReportRoutes.js";
+import notificationRoutes from "./notificationRoutes.js";
+
+
 const mainRouter = express.Router();
 
 mainRouter.get("/stats", countController);
@@ -17,5 +20,8 @@ mainRouter.use(
   salesReportRoutes
 );
 mainRouter.use("/sendMessage", contactForm);
+
+mainRouter.use("/notifications", notificationRoutes);
+
 
 export default mainRouter;

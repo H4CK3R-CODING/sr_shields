@@ -28,10 +28,7 @@ import { authState } from "./recoil/globalAtom";
 import Receipt from "./pages/Receipt";
 import Cashbook from "./pages/Cashbook";
 import SalesReport from "./pages/SalesReport";
-
-
-
-
+import SendNotification from "./pages/SendNotification";
 
 // ScrollToTop component
 const ScrollToTop = () => {
@@ -53,7 +50,6 @@ function App() {
       ? "dark"
       : "light";
   });
-  
 
   // Apply theme changes
   useEffect(() => {
@@ -61,10 +57,9 @@ function App() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // start with loading
-  const [state, setState] = useRecoilState(authState)
+  const [state, setState] = useRecoilState(authState);
   const [showModal, setShowModal] = useState(true);
   const closeModel = () => {
     setShowModal(false);
@@ -84,10 +79,10 @@ function App() {
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_BACKENDURL}/api/v1/auth/me`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         setUser(res.data); // ✅ logged in
-        setState({user: res.data, loading: false})
+        setState({ user: res.data, loading: false });
       } catch (err) {
         console.error("Auth check failed:", err);
         localStorage.removeItem("token");
@@ -102,16 +97,12 @@ function App() {
 
   // show loader while checking auth
   if (loading) {
-    return (
-      <FlashScreen/>
-    );
+    return <FlashScreen />;
   }
 
   return (
     <>
-
-      {!user && <Model
-       show={showModal} closeFun={closeModel} />}
+      {!user && <Model show={showModal} closeFun={closeModel} />}
       {/* Scroll to top on route change */}
       <ScrollToTop />
 
@@ -140,21 +131,13 @@ function App() {
             <Route path="/join" element={<JoinGroupsPage />} />
             <Route path="/announcements" element={<AnnouncementsPage />} />
             <Route path="/receipt" element={<Receipt />} />
-            
-            <Route
-              path="/announcement/:id"
-              element={<AnnouncementDetail />}
-            />
-            <Route path="/contact" element={<Contact />} />
-            <Route
-          path="/cashbook"
-          element={<Cashbook />}
-        />
 
-        <Route
-          path="/sales-report"
-          element={<SalesReport />}
-        />
+            <Route path="/announcement/:id" element={<AnnouncementDetail />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/cashbook" element={<Cashbook />} />
+
+            <Route path="/sales-report" element={<SalesReport />} />
+            <Route path="/send-notification" element={<SendNotification />} />
 
             <Route path="/forgetpass" element={<ForgetPass />} />
             <Route path="/setPassword" element={<SetPassword />} />

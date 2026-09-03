@@ -26,8 +26,7 @@ const Home = () => {
   }, []);
   const { user } = useRecoilValue(authState);
 
-
-const userId = user?._id;
+  const userId = user?._id;
 
   const stats = [
     { label: "Active Users", value: 1240 },
@@ -157,11 +156,7 @@ const userId = user?._id;
           )}
 
           {userId === import.meta.env.VITE_CHIEF_ADMIN && (
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://job-notify-bot.vercel.app/"
-            >
+            <Link to="/send-notification">
               <motion.button
                 whileHover={{ scale: 1.07, rotate: -1 }}
                 whileTap={{ scale: 0.95 }}
@@ -173,9 +168,9 @@ const userId = user?._id;
       flex items-center gap-2
       transition-all duration-300"
               >
-                Send Notification Site
+                Send Notification
               </motion.button>
-            </a>
+            </Link>
           )}
         </motion.div>
       </div>
