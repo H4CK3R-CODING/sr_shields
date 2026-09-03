@@ -26,7 +26,7 @@ const Home = () => {
   }, []);
   const { user } = useRecoilValue(authState);
 
-  const userId = user?._id;
+  const userRole = user?.role;
 
   const stats = [
     { label: "Active Users", value: 1240 },
@@ -118,7 +118,7 @@ const Home = () => {
           </Link>
 
           {/* ADD TRANSACTION */}
-          {userId === import.meta.env.VITE_CHIEF_ADMIN && (
+          {userRole === "admin" && (
             <Link to={"/cashbook"}>
               <motion.button
                 whileHover={{ scale: 1.07, rotate: -1 }}
@@ -137,7 +137,7 @@ const Home = () => {
           )}
 
           {/* SALES REPORT */}
-          {userId === import.meta.env.VITE_CHIEF_ADMIN && (
+          {userRole === "admin" && (
             <Link to={"/sales-report"}>
               <motion.button
                 whileHover={{ scale: 1.07, rotate: -1 }}
@@ -155,7 +155,7 @@ const Home = () => {
             </Link>
           )}
 
-          {userId === import.meta.env.VITE_CHIEF_ADMIN && (
+          {userRole === "admin" && (
             <Link to="/send-notification">
               <motion.button
                 whileHover={{ scale: 1.07, rotate: -1 }}
