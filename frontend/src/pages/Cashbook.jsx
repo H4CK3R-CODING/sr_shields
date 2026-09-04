@@ -64,7 +64,7 @@ const Cashbook = () => {
 
   const [formData, setFormData] = useState({
     amount: "",
-    paymentMode: "Cash",
+    paymentMode: "Online",
     description: "",
     customerName: "",
     customerPhone: "",
@@ -182,7 +182,7 @@ const Cashbook = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (data?.success) {
@@ -225,7 +225,7 @@ const Cashbook = () => {
 
     setFormData({
       amount: "",
-      paymentMode: "Cash",
+      paymentMode: "Online",
       description: "",
       customerName: "",
       customerPhone: "",
@@ -342,7 +342,7 @@ const Cashbook = () => {
         // Reset form
         setFormData({
           amount: "",
-          paymentMode: "Cash",
+          paymentMode: "Online",
           description: "",
           customerName: "",
           customerPhone: "",
