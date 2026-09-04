@@ -1,11 +1,5 @@
-import React, {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import {
-  Trash2,
-} from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Trash2 } from "lucide-react";
 
 import { motion } from "framer-motion";
 
@@ -14,9 +8,7 @@ import "aos/dist/aos.css";
 
 import axios from "axios";
 
-import toast, {
-  Toaster,
-} from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -31,30 +23,23 @@ import {
   Legend,
 } from "recharts";
 
-
 const SalesReport = () => {
   // ============================================================
   // STATE
   // ============================================================
 
-  const [duration, setDuration] =
-    useState("This Month");
+  const [duration, setDuration] = useState("This Month");
 
-  const [showDuration, setShowDuration] =
-    useState(false);
+  const [showDuration, setShowDuration] = useState(false);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [pdfLoading, setPdfLoading] =
-    useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   // All transactions returned by backend
-  const [sales, setSales] =
-    useState([]);
+  const [sales, setSales] = useState([]);
 
-  const [transactionType, setTransactionType] =
-    useState("All");
+  const [transactionType, setTransactionType] = useState("All");
 
   const [report, setReport] = useState({
     transactions: 0,
@@ -65,25 +50,24 @@ const SalesReport = () => {
 
   const [showCustomDate, setShowCustomDate] = useState(false);
 
-const [customStartDate, setCustomStartDate] = useState("");
+  const [customStartDate, setCustomStartDate] = useState("");
 
-const [customEndDate, setCustomEndDate] = useState("");
+  const [customEndDate, setCustomEndDate] = useState("");
 
   const [dates, setDates] = useState({
     startDate: "",
     endDate: "",
   });
 
-  const [paymentMode, setPaymentMode] =
-    useState("All");
+  const [paymentMode, setPaymentMode] = useState("All");
 
   // Search typed by user
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
   // Search actually applied after Search button / Enter
-  const [appliedSearch, setAppliedSearch] =
-    useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+
+  const token = localStorage.getItem("token");
 
   // ============================================================
   // AOS
@@ -99,7 +83,6 @@ const [customEndDate, setCustomEndDate] = useState("");
     fetchReport("This Month", "All", "All");
   }, []);
 
-
   // ============================================================
   // LOCAL DATE FORMAT
   // ============================================================
@@ -107,17 +90,12 @@ const [customEndDate, setCustomEndDate] = useState("");
   const formatDateForAPI = (date) => {
     const year = date.getFullYear();
 
-    const month = String(
-      date.getMonth() + 1
-    ).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
 
-    const day = String(
-      date.getDate()
-    ).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
   };
-
 
   // ============================================================
   // GET DATE RANGE
@@ -130,180 +108,113 @@ const [customEndDate, setCustomEndDate] = useState("");
     let endDate;
 
     switch (selectedDuration) {
-
       // --------------------------------------------------------
       // THIS YEAR
       // --------------------------------------------------------
 
       case "This year":
+        startDate = new Date(now.getFullYear(), 0, 1);
 
-        startDate = new Date(
-          now.getFullYear(),
-          0,
-          1
-        );
-
-        endDate = new Date(
-          now.getFullYear(),
-          11,
-          31
-        );
+        endDate = new Date(now.getFullYear(), 11, 31);
 
         break;
-
 
       // --------------------------------------------------------
       // THIS QUARTER
       // --------------------------------------------------------
 
       case "This quarter": {
-        const quarter =
-          Math.floor(
-            now.getMonth() / 3
-          );
+        const quarter = Math.floor(now.getMonth() / 3);
 
-        const quarterStartMonth =
-          quarter * 3;
+        const quarterStartMonth = quarter * 3;
 
-        startDate = new Date(
-          now.getFullYear(),
-          quarterStartMonth,
-          1
-        );
+        startDate = new Date(now.getFullYear(), quarterStartMonth, 1);
 
-        endDate = new Date(
-          now.getFullYear(),
-          quarterStartMonth + 3,
-          0
-        );
+        endDate = new Date(now.getFullYear(), quarterStartMonth + 3, 0);
 
         break;
       }
-
 
       // --------------------------------------------------------
       // THIS MONTH
       // --------------------------------------------------------
 
       case "This Month":
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        startDate = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          1
-        );
-
-        endDate = new Date(
-          now.getFullYear(),
-          now.getMonth() + 1,
-          0
-        );
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
         break;
-
 
       // --------------------------------------------------------
       // LAST MONTH
       // --------------------------------------------------------
 
       case "Last Month":
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-        startDate = new Date(
-          now.getFullYear(),
-          now.getMonth() - 1,
-          1
-        );
-
-        endDate = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          0
-        );
+        endDate = new Date(now.getFullYear(), now.getMonth(), 0);
 
         break;
-
 
       // --------------------------------------------------------
       // THIS WEEK
       // --------------------------------------------------------
 
       case "This week": {
-
         const day = now.getDay();
 
-        const difference =
-          day === 0 ? 6 : day - 1;
+        const difference = day === 0 ? 6 : day - 1;
 
         startDate = new Date(now);
 
-        startDate.setDate(
-          now.getDate() - difference
-        );
+        startDate.setDate(now.getDate() - difference);
 
         endDate = new Date(now);
 
         break;
       }
 
-
       // --------------------------------------------------------
       // YESTERDAY
       // --------------------------------------------------------
 
       case "Yesterday":
-
         startDate = new Date(now);
 
-        startDate.setDate(
-          now.getDate() - 1
-        );
+        startDate.setDate(now.getDate() - 1);
 
         endDate = new Date(startDate);
 
         break;
-
 
       // --------------------------------------------------------
       // TODAY
       // --------------------------------------------------------
 
       case "Today":
-
         startDate = new Date(now);
 
         endDate = new Date(now);
 
         break;
 
-
       // --------------------------------------------------------
       // DEFAULT
       // --------------------------------------------------------
 
       default:
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        startDate = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          1
-        );
-
-        endDate = new Date(
-          now.getFullYear(),
-          now.getMonth() + 1,
-          0
-        );
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     }
 
     return {
-      startDate:
-        formatDateForAPI(startDate),
+      startDate: formatDateForAPI(startDate),
 
-      endDate:
-        formatDateForAPI(endDate),
+      endDate: formatDateForAPI(endDate),
     };
   };
-
 
   // ============================================================
   // FETCH REPORT
@@ -317,15 +228,12 @@ const [customEndDate, setCustomEndDate] = useState("");
   const fetchReport = async (
     selectedDuration = duration,
     selectedPayment = paymentMode,
-    selectedType = transactionType
+    selectedType = transactionType,
   ) => {
-
     try {
-
       setLoading(true);
 
-      const range =
-        getDateRange(selectedDuration);
+      const range = getDateRange(selectedDuration);
 
       setDates(range);
 
@@ -333,36 +241,26 @@ const [customEndDate, setCustomEndDate] = useState("");
         `${import.meta.env.VITE_BACKENDURL}/api/v1/sales-report`,
         {
           params: {
-            startDate:
-              range.startDate,
+            startDate: range.startDate,
 
-            endDate:
-              range.endDate,
+            endDate: range.endDate,
 
-            paymentMode:
-              selectedPayment,
+            paymentMode: selectedPayment,
 
-            type:
-              selectedType,
+            type: selectedType,
           },
 
           withCredentials: true,
 
           headers: {
-            "Content-Type":
-              "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
-
       if (data?.success) {
-
-        setSales(
-          Array.isArray(data.transactions)
-            ? data.transactions
-            : []
-        );
+        setSales(Array.isArray(data.transactions) ? data.transactions : []);
 
         setReport(
           data.report || {
@@ -370,11 +268,9 @@ const [customEndDate, setCustomEndDate] = useState("");
             netSale: 0,
             paidAmount: 0,
             unpaidBalance: 0,
-          }
+          },
         );
-
       } else {
-
         setSales([]);
 
         setReport({
@@ -384,179 +280,136 @@ const [customEndDate, setCustomEndDate] = useState("");
           unpaidBalance: 0,
         });
 
-        toast.error(
-          data?.message ||
-            "Unable to load report."
-        );
+        toast.error(data?.message || "Unable to load report.");
       }
-
     } catch (error) {
+      console.error("Sales Report Error:", error);
 
-      console.error(
-        "Sales Report Error:",
-        error
-      );
-
-      toast.error(
-        error.response?.data?.message ||
-          "Backend not responding"
-      );
-
+      toast.error(error.response?.data?.message || "Backend not responding");
     } finally {
-
       setLoading(false);
     }
   };
-
 
   // ============================================================
   // CHANGE DURATION
   // ============================================================
 
-const handleDurationChange = (value) => {
-  if (value === "Custom Date") {
+  const handleDurationChange = (value) => {
+    if (value === "Custom Date") {
+      setShowDuration(false);
+
+      // Set default custom dates if empty
+      if (!customStartDate) {
+        setCustomStartDate(dates.startDate);
+      }
+
+      if (!customEndDate) {
+        setCustomEndDate(dates.endDate);
+      }
+
+      setShowCustomDate(true);
+
+      return;
+    }
+
+    setDuration(value);
+
     setShowDuration(false);
-
-    // Set default custom dates if empty
-    if (!customStartDate) {
-      setCustomStartDate(dates.startDate);
-    }
-
-    if (!customEndDate) {
-      setCustomEndDate(dates.endDate);
-    }
-
-    setShowCustomDate(true);
-
-    return;
-  }
-
-  setDuration(value);
-
-  setShowDuration(false);
-
-  setAppliedSearch("");
-
-  fetchReport(
-    value,
-    paymentMode,
-    transactionType
-  );
-};
-const handleCustomDateApply = async () => {
-  if (!customStartDate || !customEndDate) {
-    toast.error("Please select both dates.");
-    return;
-  }
-
-  if (customStartDate > customEndDate) {
-    toast.error(
-      "Start date cannot be after end date."
-    );
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    setDuration("Custom Date");
-
-    setDates({
-      startDate: customStartDate,
-      endDate: customEndDate,
-    });
 
     setAppliedSearch("");
 
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_BACKENDURL}/api/v1/sales-report`,
-      {
-        params: {
-          startDate: customStartDate,
-          endDate: customEndDate,
-          paymentMode: paymentMode,
-          type: transactionType,
+    fetchReport(value, paymentMode, transactionType);
+  };
+  const handleCustomDateApply = async () => {
+    if (!customStartDate || !customEndDate) {
+      toast.error("Please select both dates.");
+      return;
+    }
+
+    if (customStartDate > customEndDate) {
+      toast.error("Start date cannot be after end date.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      setDuration("Custom Date");
+
+      setDates({
+        startDate: customStartDate,
+        endDate: customEndDate,
+      });
+
+      setAppliedSearch("");
+
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BACKENDURL}/api/v1/sales-report`,
+        {
+          params: {
+            startDate: customStartDate,
+            endDate: customEndDate,
+            paymentMode: paymentMode,
+            type: transactionType,
+          },
+
+          withCredentials: true,
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         },
-
-        withCredentials: true,
-
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-      }
-    );
-
-    if (data?.success) {
-      setSales(
-        Array.isArray(data.transactions)
-          ? data.transactions
-          : []
       );
 
-      setReport(
-        data.report || {
+      if (data?.success) {
+        setSales(Array.isArray(data.transactions) ? data.transactions : []);
+
+        setReport(
+          data.report || {
+            transactions: 0,
+            netSale: 0,
+            paidAmount: 0,
+            unpaidBalance: 0,
+          },
+        );
+
+        setShowCustomDate(false);
+
+        toast.success("Custom date report loaded.");
+      } else {
+        setSales([]);
+
+        setReport({
           transactions: 0,
           netSale: 0,
           paidAmount: 0,
           unpaidBalance: 0,
-        }
-      );
+        });
 
-      setShowCustomDate(false);
+        toast.error(data?.message || "Unable to load report.");
+      }
+    } catch (error) {
+      console.error("Custom date report error:", error);
 
-      toast.success(
-        "Custom date report loaded."
-      );
-    } else {
-      setSales([]);
-
-      setReport({
-        transactions: 0,
-        netSale: 0,
-        paidAmount: 0,
-        unpaidBalance: 0,
-      });
-
-      toast.error(
-        data?.message ||
-          "Unable to load report."
-      );
+      toast.error(error.response?.data?.message || "Backend not responding.");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error(
-      "Custom date report error:",
-      error
-    );
-
-    toast.error(
-      error.response?.data?.message ||
-        "Backend not responding."
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+  };
   // ============================================================
   // PAYMENT FILTER
   // ============================================================
 
-  const handlePaymentModeChange = (
-    value
-  ) => {
-
+  const handlePaymentModeChange = (value) => {
     setPaymentMode(value);
 
-    fetchReport(
-      duration,
-      value,
-      transactionType
-    );
+    fetchReport(duration, value, transactionType);
 
     // Keep input but reset currently applied search
     setAppliedSearch("");
   };
-
 
   // ============================================================
   // SEARCH INPUT
@@ -566,55 +419,39 @@ const handleCustomDateApply = async () => {
     setSearch(e.target.value);
   };
 
-
   // ============================================================
   // APPLY SEARCH
   // ============================================================
 
   const handleSearchClick = () => {
-
-    setAppliedSearch(
-      search.trim()
-    );
+    setAppliedSearch(search.trim());
   };
-
 
   // ============================================================
   // SEARCH ON ENTER
   // ============================================================
 
   const handleSearchKeyDown = (e) => {
-
     if (e.key === "Enter") {
-
       e.preventDefault();
 
-      setAppliedSearch(
-        search.trim()
-      );
+      setAppliedSearch(search.trim());
     }
   };
-
 
   // ============================================================
   // RESET FILTERS
   // ============================================================
 
   const resetFilters = () => {
-
     setPaymentMode("All");
 
     setSearch("");
 
     setAppliedSearch("");
 
-    fetchReport(
-      duration,
-      "All",
-      transactionType
-    );
+    fetchReport(duration, "All", transactionType);
   };
-
 
   // ============================================================
   // FRONTEND SEARCH
@@ -639,183 +476,140 @@ const handleCustomDateApply = async () => {
   // ============================================================
 
   const filteredTransactions = useMemo(() => {
-
-    const query =
-      appliedSearch
-        .trim()
-        .toLowerCase();
+    const query = appliedSearch.trim().toLowerCase();
 
     // No search
     if (!query) {
       return sales;
     }
 
-    return sales.filter(
-      (transaction) => {
+    return sales.filter((transaction) => {
+      // ------------------------------------------------------
+      // Main transaction fields
+      // ------------------------------------------------------
 
-        // ------------------------------------------------------
-        // Main transaction fields
-        // ------------------------------------------------------
+      const mainFields = [
+        transaction.invoiceNumber,
 
-        const mainFields = [
-          transaction.invoiceNumber,
+        transaction.customerName,
 
-          transaction.customerName,
+        transaction.customerPhone,
 
-          transaction.customerPhone,
+        transaction.description,
 
-          transaction.description,
+        transaction.name,
 
-          transaction.name,
+        transaction.phone,
 
-          transaction.phone,
+        transaction.customer,
 
-          transaction.customer,
+        transaction.paymentMode,
 
-          transaction.paymentMode,
+        transaction.type,
 
-          transaction.type,
+        transaction.amount,
 
-          transaction.amount,
+        transaction.totalAmount,
 
-          transaction.totalAmount,
+        transaction.paidAmount,
 
-          transaction.paidAmount,
+        transaction.unpaidAmount,
 
-          transaction.unpaidAmount,
+        transaction._id,
+      ];
 
-          transaction._id,
-        ];
+      // ------------------------------------------------------
+      // Item names
+      // ------------------------------------------------------
 
+      const itemFields = Array.isArray(transaction.items)
+        ? transaction.items.flatMap((item) => [
+            item?.name,
+            item?.description,
+            item?.price,
+            item?.quantity,
+          ])
+        : [];
 
-        // ------------------------------------------------------
-        // Item names
-        // ------------------------------------------------------
+      // ------------------------------------------------------
+      // Combine everything
+      // ------------------------------------------------------
 
-        const itemFields =
-          Array.isArray(transaction.items)
-            ? transaction.items.flatMap(
-                (item) => [
-                  item?.name,
-                  item?.description,
-                  item?.price,
-                  item?.quantity,
-                ]
-              )
-            : [];
+      const searchableText = [...mainFields, ...itemFields]
+        .filter((value) => value !== null && value !== undefined)
+        .map((value) => String(value).toLowerCase())
+        .join(" ");
 
-
-        // ------------------------------------------------------
-        // Combine everything
-        // ------------------------------------------------------
-
-        const searchableText = [
-          ...mainFields,
-          ...itemFields,
-        ]
-          .filter(
-            (value) =>
-              value !== null &&
-              value !== undefined
-          )
-          .map(
-            (value) =>
-              String(value).toLowerCase()
-          )
-          .join(" ");
-
-
-        return searchableText.includes(
-          query
-        );
-      }
-    );
-
-  }, [
-    sales,
-    appliedSearch,
-  ]);
-
+      return searchableText.includes(query);
+    });
+  }, [sales, appliedSearch]);
 
   // ============================================================
-// DELETE TRANSACTION
-// ============================================================
+  // DELETE TRANSACTION
+  // ============================================================
 
-const handleDeleteTransaction = async (transactionId) => {
-  if (!transactionId) {
-    toast.error("Transaction ID not found.");
-    return;
-  }
+  const handleDeleteTransaction = async (transactionId) => {
+    if (!transactionId) {
+      toast.error("Transaction ID not found.");
+      return;
+    }
 
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this transaction?"
-  );
-
-  if (!confirmDelete) {
-    return;
-  }
-
-  try {
-    const { data } = await axios.delete(
-      `${import.meta.env.VITE_BACKENDURL}/api/v1/cashbook/${transactionId}`,
-      {
-        withCredentials: true,
-      }
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this transaction?",
     );
 
-    if (data?.success) {
-      toast.success(
-        data.message ||
-          "Transaction deleted successfully."
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      const { data } = await axios.delete(
+        `${import.meta.env.VITE_BACKENDURL}/api/v1/cashbook/${transactionId}`,
+        {
+          withCredentials: true,
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
 
-      // Reload the Sales Report
-      await fetchReport();
-    } else {
+      if (data?.success) {
+        toast.success(data.message || "Transaction deleted successfully.");
+
+        // Reload the Sales Report
+        await fetchReport();
+      } else {
+        toast.error(data?.message || "Failed to delete transaction.");
+      }
+    } catch (error) {
+      console.error("Delete transaction error:", error);
+
       toast.error(
-        data?.message ||
-          "Failed to delete transaction."
+        error.response?.data?.message || "❌ Failed to delete transaction.",
       );
     }
-  } catch (error) {
-    console.error(
-      "Delete transaction error:",
-      error
-    );
-
-    toast.error(
-      error.response?.data?.message ||
-        "❌ Failed to delete transaction."
-    );
-  }
-};
-
+  };
 
   // ============================================================
   // FILTERED REPORT
   // ============================================================
 
   const filteredReport = useMemo(() => {
-
     // If there is no search,
     // use backend report directly.
     if (!appliedSearch.trim()) {
-
       return {
-        transactions:
-          report.transactions || 0,
+        transactions: report.transactions || 0,
 
-        netSale:
-          report.netSale || 0,
+        netSale: report.netSale || 0,
 
-        paidAmount:
-          report.paidAmount || 0,
+        paidAmount: report.paidAmount || 0,
 
-        unpaidBalance:
-          report.unpaidBalance || 0,
+        unpaidBalance: report.unpaidBalance || 0,
       };
     }
-
 
     // If search is applied,
     // calculate totals from visible records.
@@ -825,58 +619,30 @@ const handleDeleteTransaction = async (transactionId) => {
 
     let unpaidBalance = 0;
 
+    filteredTransactions.forEach((transaction) => {
+      const total = Number(transaction.totalAmount ?? transaction.amount ?? 0);
 
-    filteredTransactions.forEach(
-      (transaction) => {
+      const paid = Number(transaction.paidAmount ?? 0);
 
-        const total =
-          Number(
-            transaction.totalAmount ??
-              transaction.amount ??
-              0
-          );
+      const unpaid = Number(
+        transaction.unpaidAmount ?? Math.max(total - paid, 0),
+      );
 
-        const paid =
-          Number(
-            transaction.paidAmount ?? 0
-          );
-
-        const unpaid =
-          Number(
-            transaction.unpaidAmount ??
-              Math.max(
-                total - paid,
-                0
-              )
-          );
-
-
-        // Normal sales are positive.
-        // OUT transactions are negative.
-        if (
-          String(transaction.type)
-            .toUpperCase() === "OUT"
-        ) {
-
-          netSale -= total;
-
-        } else {
-
-          netSale += total;
-        }
-
-
-        paidAmount += paid;
-
-        unpaidBalance += unpaid;
+      // Normal sales are positive.
+      // OUT transactions are negative.
+      if (String(transaction.type).toUpperCase() === "OUT") {
+        netSale -= total;
+      } else {
+        netSale += total;
       }
-    );
 
+      paidAmount += paid;
+
+      unpaidBalance += unpaid;
+    });
 
     return {
-
-      transactions:
-        filteredTransactions.length,
+      transactions: filteredTransactions.length,
 
       netSale,
 
@@ -884,225 +650,147 @@ const handleDeleteTransaction = async (transactionId) => {
 
       unpaidBalance,
     };
-
-  }, [
-    filteredTransactions,
-    report,
-    appliedSearch,
-  ]);
+  }, [filteredTransactions, report, appliedSearch]);
 
   // ============================================================
-// SALES GRAPH DATA
-// ============================================================
+  // SALES GRAPH DATA
+  // ============================================================
 
+  const graphData = useMemo(() => {
+    const grouped = {};
 
-const graphData = useMemo(() => {
-  const grouped = {};
+    filteredTransactions.forEach((transaction) => {
+      if (!transaction.date) return;
 
-  filteredTransactions.forEach((transaction) => {
-    if (!transaction.date) return;
+      const date = new Date(transaction.date);
 
-    const date = new Date(transaction.date);
+      if (Number.isNaN(date.getTime())) return;
 
-    if (Number.isNaN(date.getTime())) return;
+      const dateKey = date.toISOString().split("T")[0];
 
-    const dateKey = date.toISOString().split("T")[0];
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = {
+          date: dateKey,
+          label: date.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+          }),
+          inAmount: 0,
+          outAmount: 0,
+          transactions: 0,
+        };
+      }
 
-    if (!grouped[dateKey]) {
-      grouped[dateKey] = {
-        date: dateKey,
-        label: date.toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-        }),
-        inAmount: 0,
-        outAmount: 0,
-        transactions: 0,
-      };
-    }
+      const amount =
+        Number(transaction.totalAmount ?? transaction.amount ?? 0) || 0;
 
-    const amount =
-      Number(
-        transaction.totalAmount ??
-          transaction.amount ??
-          0
-      ) || 0;
+      const type = String(transaction.type || "").toUpperCase();
 
-    const type = String(
-      transaction.type || ""
-    ).toUpperCase();
+      if (type === "IN") {
+        grouped[dateKey].inAmount += amount;
+      }
 
-    if (type === "IN") {
-      grouped[dateKey].inAmount += amount;
-    }
+      if (type === "OUT") {
+        grouped[dateKey].outAmount += amount;
+      }
 
-    if (type === "OUT") {
-      grouped[dateKey].outAmount += amount;
-    }
+      grouped[dateKey].transactions += 1;
+    });
 
-    grouped[dateKey].transactions += 1;
-  });
-
-  return Object.values(grouped).sort(
-    (a, b) =>
-      new Date(a.date) -
-      new Date(b.date)
-  );
-}, [filteredTransactions]);
-
-
+    return Object.values(grouped).sort(
+      (a, b) => new Date(a.date) - new Date(b.date),
+    );
+  }, [filteredTransactions]);
 
   // ============================================================
   // FORMAT MONEY
   // ============================================================
 
-  const formatAmount = (
-    amount
-  ) => {
-
-    return Number(
-      amount || 0
-    ).toLocaleString(
-      "en-IN"
-    );
+  const formatAmount = (amount) => {
+    return Number(amount || 0).toLocaleString("en-IN");
   };
-
 
   // ============================================================
   // DISPLAY DATE
   // ============================================================
 
-  const displayDate = (
-    date
-  ) => {
-
+  const displayDate = (date) => {
     if (!date) {
       return "--";
     }
 
-    const parts =
-      date.split("-");
+    const parts = date.split("-");
 
-    if (
-      parts.length !== 3
-    ) {
+    if (parts.length !== 3) {
       return date;
     }
 
-    const localDate =
-      new Date(
-        Number(parts[0]),
-        Number(parts[1]) - 1,
-        Number(parts[2])
-      );
-
-    return localDate.toLocaleDateString(
-      "en-IN",
-      {
-        day: "2-digit",
-        month: "short",
-        year: "2-digit",
-      }
+    const localDate = new Date(
+      Number(parts[0]),
+      Number(parts[1]) - 1,
+      Number(parts[2]),
     );
-  };
 
+    return localDate.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "2-digit",
+    });
+  };
 
   // ============================================================
   // TRANSACTION DATE
   // ============================================================
 
-  const formatTransactionDate = (
-    date
-  ) => {
-
+  const formatTransactionDate = (date) => {
     if (!date) {
       return "--";
     }
 
-    const parsedDate =
-      new Date(date);
+    const parsedDate = new Date(date);
 
-    if (
-      Number.isNaN(
-        parsedDate.getTime()
-      )
-    ) {
+    if (Number.isNaN(parsedDate.getTime())) {
       return "--";
     }
 
-    return parsedDate.toLocaleDateString(
-      "en-IN",
-      {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }
-    );
+    return parsedDate.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   };
-
 
   // ============================================================
   // TRANSACTION TIME
   // ============================================================
 
-  const formatTransactionTime = (
-    date
-  ) => {
-
+  const formatTransactionTime = (date) => {
     if (!date) {
       return "";
     }
 
-    const parsedDate =
-      new Date(date);
+    const parsedDate = new Date(date);
 
-    if (
-      Number.isNaN(
-        parsedDate.getTime()
-      )
-    ) {
+    if (Number.isNaN(parsedDate.getTime())) {
       return "";
     }
 
-    return parsedDate.toLocaleTimeString(
-      "en-IN",
-      {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }
-    );
+    return parsedDate.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
-
 
   // ============================================================
   // TOTAL ITEMS
   // ============================================================
 
   const totalItems = useMemo(() => {
-
-    return filteredTransactions.reduce(
-      (total, sale) => {
-
-        return (
-          total +
-          (
-            Array.isArray(
-              sale.items
-            )
-              ? sale.items.length
-              : 0
-          )
-        );
-
-      },
-      0
-    );
-
-  }, [
-    filteredTransactions,
-  ]);
-
+    return filteredTransactions.reduce((total, sale) => {
+      return total + (Array.isArray(sale.items) ? sale.items.length : 0);
+    }, 0);
+  }, [filteredTransactions]);
 
   // ============================================================
   // GENERATE PDF
@@ -1111,34 +799,22 @@ const graphData = useMemo(() => {
   // ============================================================
 
   const generatePDF = () => {
-
-    if (
-      !filteredTransactions.length
-    ) {
-
-      toast.error(
-        "No transactions available to export."
-      );
+    if (!filteredTransactions.length) {
+      toast.error("No transactions available to export.");
 
       return;
     }
 
-
     try {
-
       setPdfLoading(true);
 
+      const doc = new jsPDF({
+        orientation: "landscape",
 
-      const doc =
-        new jsPDF({
-          orientation:
-            "landscape",
+        unit: "mm",
 
-          unit: "mm",
-
-          format: "a4",
-        });
-
+        format: "a4",
+      });
 
       // ========================================================
       // TITLE
@@ -1146,17 +822,9 @@ const graphData = useMemo(() => {
 
       doc.setFontSize(20);
 
-      doc.setFont(
-        "helvetica",
-        "bold"
-      );
+      doc.setFont("helvetica", "bold");
 
-      doc.text(
-        "Sales Report",
-        14,
-        15
-      );
-
+      doc.text("Sales Report", 14, 15);
 
       // ========================================================
       // PERIOD
@@ -1164,48 +832,29 @@ const graphData = useMemo(() => {
 
       doc.setFontSize(10);
 
-      doc.setFont(
-        "helvetica",
-        "normal"
-      );
+      doc.setFont("helvetica", "normal");
 
       doc.text(
-        `Period: ${displayDate(
-          dates.startDate
-        )} - ${displayDate(
-          dates.endDate
+        `Period: ${displayDate(dates.startDate)} - ${displayDate(
+          dates.endDate,
         )}`,
         14,
-        22
+        22,
       );
-
 
       // ========================================================
       // PAYMENT MODE
       // ========================================================
 
-      doc.text(
-        `Payment Mode: ${paymentMode}`,
-        14,
-        28
-      );
-
+      doc.text(`Payment Mode: ${paymentMode}`, 14, 28);
 
       // ========================================================
       // SEARCH
       // ========================================================
 
-      if (
-        appliedSearch.trim()
-      ) {
-
-        doc.text(
-          `Search: ${appliedSearch}`,
-          100,
-          28
-        );
+      if (appliedSearch.trim()) {
+        doc.text(`Search: ${appliedSearch}`, 100, 28);
       }
-
 
       // ========================================================
       // SUMMARY
@@ -1213,41 +862,19 @@ const graphData = useMemo(() => {
 
       doc.setFontSize(11);
 
-      doc.setFont(
-        "helvetica",
-        "bold"
-      );
+      doc.setFont("helvetica", "bold");
+
+      doc.text(`Transactions: ${filteredReport.transactions}`, 14, 37);
+
+      doc.text(`Net Sale: Rs. ${formatAmount(filteredReport.netSale)}`, 70, 37);
+
+      doc.text(`Paid: Rs. ${formatAmount(filteredReport.paidAmount)}`, 135, 37);
 
       doc.text(
-        `Transactions: ${filteredReport.transactions}`,
-        14,
-        37
-      );
-
-      doc.text(
-        `Net Sale: Rs. ${formatAmount(
-          filteredReport.netSale
-        )}`,
-        70,
-        37
-      );
-
-      doc.text(
-        `Paid: Rs. ${formatAmount(
-          filteredReport.paidAmount
-        )}`,
-        135,
-        37
-      );
-
-      doc.text(
-        `Unpaid: Rs. ${formatAmount(
-          filteredReport.unpaidBalance
-        )}`,
+        `Unpaid: Rs. ${formatAmount(filteredReport.unpaidBalance)}`,
         190,
-        37
+        37,
       );
-
 
       // ========================================================
       // TABLE DATA
@@ -1255,107 +882,64 @@ const graphData = useMemo(() => {
 
       const tableData = [];
 
+      filteredTransactions.forEach((sale, index) => {
+        const itemsText =
+          Array.isArray(sale.items) && sale.items.length
+            ? sale.items
+                .map(
+                  (item) =>
+                    `${item.name || "-"} x${
+                      item.quantity || 1
+                    } @ Rs.${formatAmount(item.price || 0)}`,
+                )
+                .join("\n")
+            : "-";
 
-      filteredTransactions.forEach(
-        (sale, index) => {
+        tableData.push([
+          // #
+          index + 1,
 
-          const itemsText =
-            Array.isArray(
-              sale.items
-            ) &&
-            sale.items.length
-              ? sale.items
-                  .map(
-                    (item) =>
-                      `${item.name || "-"} x${
-                        item.quantity || 1
-                      } @ Rs.${
-                        formatAmount(
-                          item.price || 0
-                        )
-                      }`
-                  )
-                  .join("\n")
-              : "-";
+          // Invoice
+          sale.invoiceNumber || "-",
 
+          // Customer
+          sale.customerName || "Walk-in Customer",
 
-          tableData.push([
+          // Phone
+          sale.customerPhone || "-",
 
-            // #
-            index + 1,
+          // Date
+          formatTransactionDate(sale.date),
 
+          // Time
+          formatTransactionTime(sale.date),
 
-            // Invoice
-            sale.invoiceNumber ||
-              "-",
+          // Items
+          itemsText,
 
+          // Payment
+          sale.paymentMode || "-",
 
-            // Customer
-            sale.customerName ||
-              "Walk-in Customer",
+          // Total
+          `Rs. ${formatAmount(sale.totalAmount ?? sale.amount ?? 0)}`,
 
+          // Paid
+          `Rs. ${formatAmount(sale.paidAmount || 0)}`,
 
-            // Phone
-            sale.customerPhone ||
-              "-",
-
-
-            // Date
-            formatTransactionDate(
-              sale.date
-            ),
-
-
-            // Time
-            formatTransactionTime(
-              sale.date
-            ),
-
-
-            // Items
-            itemsText,
-
-
-            // Payment
-            sale.paymentMode ||
-              "-",
-
-
-            // Total
-            `Rs. ${formatAmount(
-              sale.totalAmount ??
-                sale.amount ??
-                0
-            )}`,
-
-
-            // Paid
-            `Rs. ${formatAmount(
-              sale.paidAmount ||
-                0
-            )}`,
-
-
-            // Unpaid
-            `Rs. ${formatAmount(
-              sale.unpaidAmount ||
-                0
-            )}`,
-          ]);
-        }
-      );
-
+          // Unpaid
+          `Rs. ${formatAmount(sale.unpaidAmount || 0)}`,
+        ]);
+      });
 
       // ========================================================
       // PDF TABLE
       // ========================================================
 
-      autoTable(
-        doc,
-        {
-          startY: 44,
+      autoTable(doc, {
+        startY: 44,
 
-          head: [[
+        head: [
+          [
             "#",
             "Invoice",
             "Customer",
@@ -1367,164 +951,115 @@ const graphData = useMemo(() => {
             "Total",
             "Paid",
             "Unpaid",
-          ]],
+          ],
+        ],
 
-          body: tableData,
+        body: tableData,
 
-          theme: "grid",
+        theme: "grid",
 
-          styles: {
-            fontSize: 7,
-            cellPadding: 2,
-            valign: "middle",
+        styles: {
+          fontSize: 7,
+          cellPadding: 2,
+          valign: "middle",
+        },
+
+        headStyles: {
+          fontStyle: "bold",
+        },
+
+        columnStyles: {
+          0: {
+            cellWidth: 8,
           },
 
-          headStyles: {
-            fontStyle: "bold",
+          1: {
+            cellWidth: 23,
           },
 
-          columnStyles: {
-
-            0: {
-              cellWidth: 8,
-            },
-
-            1: {
-              cellWidth: 23,
-            },
-
-            2: {
-              cellWidth: 28,
-            },
-
-            3: {
-              cellWidth: 24,
-            },
-
-            4: {
-              cellWidth: 22,
-            },
-
-            5: {
-              cellWidth: 17,
-            },
-
-            6: {
-              cellWidth: 65,
-            },
-
-            7: {
-              cellWidth: 20,
-            },
-
-            8: {
-              cellWidth: 20,
-            },
-
-            9: {
-              cellWidth: 20,
-            },
-
-            10: {
-              cellWidth: 20,
-            },
+          2: {
+            cellWidth: 28,
           },
-        }
-      );
 
+          3: {
+            cellWidth: 24,
+          },
+
+          4: {
+            cellWidth: 22,
+          },
+
+          5: {
+            cellWidth: 17,
+          },
+
+          6: {
+            cellWidth: 65,
+          },
+
+          7: {
+            cellWidth: 20,
+          },
+
+          8: {
+            cellWidth: 20,
+          },
+
+          9: {
+            cellWidth: 20,
+          },
+
+          10: {
+            cellWidth: 20,
+          },
+        },
+      });
 
       // ========================================================
       // FOOTER
       // ========================================================
 
-      const pageCount =
-        doc.internal.getNumberOfPages();
+      const pageCount = doc.internal.getNumberOfPages();
 
-
-      for (
-        let i = 1;
-        i <= pageCount;
-        i++
-      ) {
-
+      for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
 
-
-        const pageHeight =
-          doc.internal.pageSize
-            .height;
-
+        const pageHeight = doc.internal.pageSize.height;
 
         doc.setFontSize(8);
 
-        doc.setFont(
-          "helvetica",
-          "normal"
-        );
+        doc.setFont("helvetica", "normal");
 
+        doc.text(`Page ${i} of ${pageCount}`, 14, pageHeight - 8);
 
         doc.text(
-          `Page ${i} of ${pageCount}`,
-          14,
-          pageHeight - 8
-        );
-
-
-        doc.text(
-          `Generated on ${new Date().toLocaleString(
-            "en-IN"
-          )}`,
+          `Generated on ${new Date().toLocaleString("en-IN")}`,
           220,
-          pageHeight - 8
+          pageHeight - 8,
         );
       }
-
 
       // ========================================================
       // SAVE PDF
       // ========================================================
 
-      const safeSearch =
-        appliedSearch
-          .trim()
-          .replace(
-            /[^a-zA-Z0-9_-]/g,
-            "_"
-          );
+      const safeSearch = appliedSearch.trim().replace(/[^a-zA-Z0-9_-]/g, "_");
 
+      const fileName = safeSearch
+        ? `Sales_Report_${dates.startDate}_${dates.endDate}_${safeSearch}.pdf`
+        : `Sales_Report_${dates.startDate}_${dates.endDate}.pdf`;
 
-      const fileName =
-        safeSearch
-          ? `Sales_Report_${dates.startDate}_${dates.endDate}_${safeSearch}.pdf`
-          : `Sales_Report_${dates.startDate}_${dates.endDate}.pdf`;
+      doc.save(fileName);
 
-
-      doc.save(
-        fileName
-      );
-
-
-      toast.success(
-        "PDF generated successfully!"
-      );
-
+      toast.success("PDF generated successfully!");
     } catch (error) {
+      console.error("PDF Error:", error);
 
-      console.error(
-        "PDF Error:",
-        error
-      );
-
-      toast.error(
-        "Unable to generate PDF."
-      );
-
+      toast.error("Unable to generate PDF.");
     } finally {
-
       setPdfLoading(false);
     }
   };
-
 
   // ============================================================
   // DURATION OPTIONS
@@ -1541,13 +1076,11 @@ const graphData = useMemo(() => {
     "Custom Date",
   ];
 
-
   // ============================================================
   // UI
   // ============================================================
 
   return (
-
     <div
       className="
         min-h-screen
@@ -1558,12 +1091,7 @@ const graphData = useMemo(() => {
         relative
       "
     >
-
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
-      />
-
+      <Toaster position="top-right" reverseOrder={false} />
 
       {/* ======================================================
           BACKGROUND
@@ -1583,7 +1111,6 @@ const graphData = useMemo(() => {
         "
       />
 
-
       <motion.div
         className="
           w-full
@@ -1599,8 +1126,6 @@ const graphData = useMemo(() => {
           y: 0,
         }}
       >
-
-
         {/* ==================================================
             TITLE
         =================================================== */}
@@ -1624,7 +1149,6 @@ const graphData = useMemo(() => {
           Sales Report
         </h1>
 
-
         {/* ==================================================
             DATE FILTERS
         =================================================== */}
@@ -1639,16 +1163,13 @@ const graphData = useMemo(() => {
           "
           data-aos="fade-up"
         >
-
           {/* ------------------------------------------------
               DURATION
           ------------------------------------------------- */}
 
           <button
             type="button"
-            onClick={() =>
-              setShowDuration(true)
-            }
+            onClick={() => setShowDuration(true)}
             className="
               bg-white/80
               dark:bg-black/60
@@ -1665,7 +1186,6 @@ const graphData = useMemo(() => {
               transition
             "
           >
-
             <p
               className="
                 text-gray-500
@@ -1676,7 +1196,6 @@ const graphData = useMemo(() => {
               Report Duration
             </p>
 
-
             <div
               className="
                 flex
@@ -1685,7 +1204,6 @@ const graphData = useMemo(() => {
                 mt-1
               "
             >
-
               <span
                 className="
                   text-lg
@@ -1695,7 +1213,6 @@ const graphData = useMemo(() => {
                 {duration}
               </span>
 
-
               <span
                 className="
                   text-blue-600
@@ -1704,11 +1221,8 @@ const graphData = useMemo(() => {
               >
                 ⌄
               </span>
-
             </div>
-
           </button>
-
 
           {/* ------------------------------------------------
               START DATE
@@ -1728,7 +1242,6 @@ const graphData = useMemo(() => {
               shadow-lg
             "
           >
-
             <p
               className="
                 text-gray-500
@@ -1739,7 +1252,6 @@ const graphData = useMemo(() => {
               Start Date
             </p>
 
-
             <p
               className="
                 text-lg
@@ -1747,13 +1259,9 @@ const graphData = useMemo(() => {
                 mt-1
               "
             >
-              {displayDate(
-                dates.startDate
-              )}
+              {displayDate(dates.startDate)}
             </p>
-
           </div>
-
 
           {/* ------------------------------------------------
               END DATE
@@ -1773,7 +1281,6 @@ const graphData = useMemo(() => {
               shadow-lg
             "
           >
-
             <p
               className="
                 text-gray-500
@@ -1784,7 +1291,6 @@ const graphData = useMemo(() => {
               End Date
             </p>
 
-
             <p
               className="
                 text-lg
@@ -1792,15 +1298,10 @@ const graphData = useMemo(() => {
                 mt-1
               "
             >
-              {displayDate(
-                dates.endDate
-              )}
+              {displayDate(dates.endDate)}
             </p>
-
           </div>
-
         </div>
-
 
         {/* ==================================================
             SEARCH + FILTER
@@ -1821,7 +1322,6 @@ const graphData = useMemo(() => {
           "
           data-aos="fade-up"
         >
-
           <div
             className="
               flex
@@ -1830,24 +1330,16 @@ const graphData = useMemo(() => {
               gap-3
             "
           >
-
             {/* ------------------------------------------------
                 SEARCH INPUT
             ------------------------------------------------- */}
 
-            <div
-              className="flex-1"
-            >
-
+            <div className="flex-1">
               <input
                 type="text"
                 value={search}
-                onChange={
-                  handleSearch
-                }
-                onKeyDown={
-                  handleSearchKeyDown
-                }
+                onChange={handleSearch}
+                onKeyDown={handleSearchKeyDown}
                 placeholder="
                   Search invoice, customer or phone...
                 "
@@ -1869,9 +1361,7 @@ const graphData = useMemo(() => {
                   transition
                 "
               />
-
             </div>
-
 
             {/* ------------------------------------------------
                 PAYMENT MODE
@@ -1879,11 +1369,7 @@ const graphData = useMemo(() => {
 
             <select
               value={paymentMode}
-              onChange={(e) =>
-                handlePaymentModeChange(
-                  e.target.value
-                )
-              }
+              onChange={(e) => handlePaymentModeChange(e.target.value)}
               className="
                 md:w-48
                 px-4
@@ -1901,29 +1387,16 @@ const graphData = useMemo(() => {
                 focus:ring-indigo-500
               "
             >
+              <option value="All">All Payment</option>
 
-              <option value="All">
-                All Payment
-              </option>
+              <option value="Cash">Cash</option>
 
-              <option value="Cash">
-                Cash
-              </option>
+              <option value="Online">Online</option>
 
-              <option value="Online">
-                Online
-              </option>
+              <option value="Credit">Credit</option>
 
-              <option value="Credit">
-                Credit
-              </option>
-
-              <option value="Partial">
-                Partial
-              </option>
-
+              <option value="Partial">Partial</option>
             </select>
-
 
             {/* ------------------------------------------------
                 SEARCH BUTTON
@@ -1931,9 +1404,7 @@ const graphData = useMemo(() => {
 
             <button
               type="button"
-              onClick={
-                handleSearchClick
-              }
+              onClick={handleSearchClick}
               className="
                 px-6
                 py-3
@@ -1953,16 +1424,13 @@ const graphData = useMemo(() => {
               Search
             </button>
 
-
             {/* ------------------------------------------------
                 RESET
             ------------------------------------------------- */}
 
             <button
               type="button"
-              onClick={
-                resetFilters
-              }
+              onClick={resetFilters}
               className="
                 px-6
                 py-3
@@ -1980,18 +1448,14 @@ const graphData = useMemo(() => {
             >
               Reset
             </button>
-
           </div>
-
         </motion.div>
-
 
         {/* ==================================================
             SEARCH STATUS
         =================================================== */}
 
         {appliedSearch.trim() && (
-
           <div
             className="
               mb-4
@@ -2001,7 +1465,6 @@ const graphData = useMemo(() => {
             "
           >
             Showing results for:
-
             <span
               className="
                 ml-1
@@ -2011,11 +1474,8 @@ const graphData = useMemo(() => {
             >
               "{appliedSearch}"
             </span>
-
           </div>
-
         )}
-
 
         {/* ==================================================
             SUMMARY
@@ -2039,7 +1499,6 @@ const graphData = useMemo(() => {
           "
           data-aos="fade-up"
         >
-
           {/* ------------------------------------------------
               TRANSACTIONS
           ------------------------------------------------- */}
@@ -2054,7 +1513,6 @@ const graphData = useMemo(() => {
               dark:border-gray-700
             "
           >
-
             <p
               className="
                 text-gray-500
@@ -2064,7 +1522,6 @@ const graphData = useMemo(() => {
             >
               TRANSACTIONS
             </p>
-
 
             <p
               className="
@@ -2076,9 +1533,7 @@ const graphData = useMemo(() => {
             >
               {filteredReport.transactions}
             </p>
-
           </div>
-
 
           {/* ------------------------------------------------
               NET SALE
@@ -2094,7 +1549,6 @@ const graphData = useMemo(() => {
               dark:border-gray-700
             "
           >
-
             <p
               className="
                 text-gray-500
@@ -2105,7 +1559,6 @@ const graphData = useMemo(() => {
               NET SALE ⓘ
             </p>
 
-
             <p
               className="
                 text-2xl
@@ -2115,14 +1568,9 @@ const graphData = useMemo(() => {
                 mt-1
               "
             >
-              ₹{" "}
-              {formatAmount(
-                filteredReport.netSale
-              )}
+              ₹ {formatAmount(filteredReport.netSale)}
             </p>
-
           </div>
-
 
           {/* ------------------------------------------------
               PAID
@@ -2136,7 +1584,6 @@ const graphData = useMemo(() => {
               dark:border-gray-700
             "
           >
-
             <p
               className="
                 text-gray-500
@@ -2147,7 +1594,6 @@ const graphData = useMemo(() => {
               PAID
             </p>
 
-
             <p
               className="
                 text-2xl
@@ -2157,23 +1603,15 @@ const graphData = useMemo(() => {
                 mt-1
               "
             >
-              ₹{" "}
-              {formatAmount(
-                filteredReport.paidAmount
-              )}
+              ₹ {formatAmount(filteredReport.paidAmount)}
             </p>
-
           </div>
-
 
           {/* ------------------------------------------------
               UNPAID
           ------------------------------------------------- */}
 
-          <div
-            className="p-5"
-          >
-
+          <div className="p-5">
             <p
               className="
                 text-gray-500
@@ -2184,7 +1622,6 @@ const graphData = useMemo(() => {
               UNPAID BALANCE ⓘ
             </p>
 
-
             <p
               className="
                 text-2xl
@@ -2194,19 +1631,14 @@ const graphData = useMemo(() => {
                 mt-1
               "
             >
-              ₹{" "}
-              {formatAmount(
-                filteredReport.unpaidBalance
-              )}
+              ₹ {formatAmount(filteredReport.unpaidBalance)}
             </p>
-
           </div>
-
         </motion.div>
-              {/* ============================================================ SALES GRAPH ============================================================ */}
+        {/* ============================================================ SALES GRAPH ============================================================ */}
 
-<motion.div
-  className="
+        <motion.div
+          className="
     bg-white/80
     dark:bg-black/60
     backdrop-blur-xl
@@ -2220,15 +1652,14 @@ const graphData = useMemo(() => {
     sm:p-6
     mb-6
   "
-  data-aos="fade-up"
->
-
-  {/* ========================================================
+          data-aos="fade-up"
+        >
+          {/* ========================================================
       GRAPH HEADER
   ======================================================== */}
 
-  <div
-    className="
+          <div
+            className="
       flex
       flex-col
       sm:flex-row
@@ -2237,150 +1668,127 @@ const graphData = useMemo(() => {
       gap-3
       mb-6
     "
-  >
-
-    <div>
-
-      <h2
-        className="
+          >
+            <div>
+              <h2
+                className="
           text-xl
           sm:text-2xl
           font-bold
           text-gray-900
           dark:text-white
         "
-      >
-        Cash Flow Overview
-      </h2>
+              >
+                Cash Flow Overview
+              </h2>
 
-      <p
-        className="
+              <p
+                className="
           text-sm
           text-gray-500
           dark:text-gray-400
           mt-1
         "
-      >
-        Daily IN and OUT transactions for the
-        selected period
-      </p>
+              >
+                Daily IN and OUT transactions for the selected period
+              </p>
+            </div>
 
-    </div>
-
-
-    {/* ======================================================
+            {/* ======================================================
         GRAPH SUMMARY
     ======================================================= */}
 
-    <div
-      className="
+            <div
+              className="
         flex
         gap-5
         text-sm
       "
-    >
+            >
+              {/* IN */}
 
-      {/* IN */}
-
-      <div>
-
-        <p
-          className="
+              <div>
+                <p
+                  className="
             text-gray-500
             dark:text-gray-400
           "
-        >
-          IN
-        </p>
+                >
+                  IN
+                </p>
 
-        <p
-          className="
+                <p
+                  className="
             font-bold
             text-emerald-600
           "
-        >
-          ₹
-          {formatAmount(
-            graphData.reduce(
-              (total, item) =>
-                total + item.inAmount,
-              0
-            )
-          )}
-        </p>
+                >
+                  ₹
+                  {formatAmount(
+                    graphData.reduce((total, item) => total + item.inAmount, 0),
+                  )}
+                </p>
+              </div>
 
-      </div>
+              {/* OUT */}
 
-
-      {/* OUT */}
-
-      <div>
-
-        <p
-          className="
+              <div>
+                <p
+                  className="
             text-gray-500
             dark:text-gray-400
           "
-        >
-          OUT
-        </p>
+                >
+                  OUT
+                </p>
 
-        <p
-          className="
+                <p
+                  className="
             font-bold
             text-red-500
           "
-        >
-          ₹
-          {formatAmount(
-            graphData.reduce(
-              (total, item) =>
-                total + item.outAmount,
-              0
-            )
-          )}
-        </p>
+                >
+                  ₹
+                  {formatAmount(
+                    graphData.reduce(
+                      (total, item) => total + item.outAmount,
+                      0,
+                    ),
+                  )}
+                </p>
+              </div>
 
-      </div>
+              {/* TRANSACTIONS */}
 
-
-      {/* TRANSACTIONS */}
-
-      <div>
-
-        <p
-          className="
+              <div>
+                <p
+                  className="
             text-gray-500
             dark:text-gray-400
           "
-        >
-          Transactions
-        </p>
+                >
+                  Transactions
+                </p>
 
-        <p
-          className="
+                <p
+                  className="
             font-bold
             text-blue-600
           "
-        >
-          {filteredTransactions.length}
-        </p>
+                >
+                  {filteredTransactions.length}
+                </p>
+              </div>
+            </div>
+          </div>
 
-      </div>
-
-    </div>
-
-  </div>
-
-
-  {/* ========================================================
+          {/* ========================================================
       GRAPH
   ======================================================= */}
 
-  {graphData.length === 0 ? (
-
-    <div
-      className="
+          {graphData.length === 0 ? (
+            <div
+              className="
         h-[320px]
         flex
         flex-col
@@ -2388,188 +1796,145 @@ const graphData = useMemo(() => {
         justify-center
         text-center
       "
-    >
-
-      <div
-        className="
+            >
+              <div
+                className="
           text-5xl
           mb-4
         "
-      >
-        📊
-      </div>
+              >
+                📊
+              </div>
 
-      <p
-        className="
+              <p
+                className="
           text-lg
           font-medium
           text-gray-700
           dark:text-gray-200
         "
-      >
-        No graph data available
-      </p>
+              >
+                No graph data available
+              </p>
 
-      <p
-        className="
+              <p
+                className="
           text-sm
           text-gray-500
           dark:text-gray-400
           mt-1
         "
-      >
-        IN and OUT transactions will appear
-        here when available.
-      </p>
-
-    </div>
-
-  ) : (
-
-    <div
-      className="
+              >
+                IN and OUT transactions will appear here when available.
+              </p>
+            </div>
+          ) : (
+            <div
+              className="
         w-full
         h-[320px]
         sm:h-[400px]
       "
-    >
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={graphData}
+                  margin={{
+                    top: 10,
+                    right: 20,
+                    left: 10,
+                    bottom: 10,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
 
-      <ResponsiveContainer
-        width="100%"
-        height="100%"
-      >
+                  {/* X AXIS */}
 
-        <LineChart
-          data={graphData}
-          margin={{
-            top: 10,
-            right: 20,
-            left: 10,
-            bottom: 10,
-          }}
-        >
+                  <XAxis
+                    dataKey="label"
+                    tick={{
+                      fontSize: 12,
+                    }}
+                    tickLine={false}
+                  />
 
-          <CartesianGrid
-            strokeDasharray="3 3"
-            opacity={0.2}
-          />
+                  {/* Y AXIS */}
 
+                  <YAxis
+                    tick={{
+                      fontSize: 12,
+                    }}
+                    tickLine={false}
+                    tickFormatter={(value) => `₹${value}`}
+                  />
 
-          {/* X AXIS */}
+                  {/* TOOLTIP */}
 
-          <XAxis
-            dataKey="label"
-            tick={{
-              fontSize: 12,
-            }}
-            tickLine={false}
-          />
+                  <Tooltip
+                    formatter={(value, name) => {
+                      if (name === "IN") {
+                        return [`₹${formatAmount(value)}`, "IN"];
+                      }
 
+                      if (name === "OUT") {
+                        return [`₹${formatAmount(value)}`, "OUT"];
+                      }
 
-          {/* Y AXIS */}
+                      return [value, name];
+                    }}
+                    labelFormatter={(label) => `Date: ${label}`}
+                    contentStyle={{
+                      borderRadius: "12px",
+                      border: "1px solid rgba(128,128,128,0.25)",
+                      background: "rgba(15, 15, 30, 0.95)",
+                      color: "#fff",
+                    }}
+                  />
 
-          <YAxis
-            tick={{
-              fontSize: 12,
-            }}
-            tickLine={false}
-            tickFormatter={(value) =>
-              `₹${value}`
-            }
-          />
+                  {/* LEGEND */}
 
+                  <Legend />
 
-          {/* TOOLTIP */}
-
-          <Tooltip
-            formatter={(value, name) => {
-
-              if (name === "IN") {
-                return [
-                  `₹${formatAmount(value)}`,
-                  "IN",
-                ];
-              }
-
-              if (name === "OUT") {
-                return [
-                  `₹${formatAmount(value)}`,
-                  "OUT",
-                ];
-              }
-
-              return [
-                value,
-                name,
-              ];
-            }}
-
-            labelFormatter={(label) =>
-              `Date: ${label}`
-            }
-
-            contentStyle={{
-              borderRadius: "12px",
-              border:
-                "1px solid rgba(128,128,128,0.25)",
-              background:
-                "rgba(15, 15, 30, 0.95)",
-              color: "#fff",
-            }}
-          />
-
-
-          {/* LEGEND */}
-
-          <Legend />
-
-
-          {/* ==================================================
+                  {/* ==================================================
               IN LINE
           ================================================== */}
 
-          <Line
-            type="monotone"
-            dataKey="inAmount"
-            name="IN"
-            stroke="#10b981"
-            strokeWidth={3}
-            dot={{
-              r: 4,
-            }}
-            activeDot={{
-              r: 7,
-            }}
-          />
+                  <Line
+                    type="monotone"
+                    dataKey="inAmount"
+                    name="IN"
+                    stroke="#10b981"
+                    strokeWidth={3}
+                    dot={{
+                      r: 4,
+                    }}
+                    activeDot={{
+                      r: 7,
+                    }}
+                  />
 
-
-          {/* ==================================================
+                  {/* ==================================================
               OUT LINE
           ================================================== */}
 
-          <Line
-            type="monotone"
-            dataKey="outAmount"
-            name="OUT"
-            stroke="#ef4444"
-            strokeWidth={3}
-            dot={{
-              r: 4,
-            }}
-            activeDot={{
-              r: 7,
-            }}
-          />
-
-        </LineChart>
-
-      </ResponsiveContainer>
-
-    </div>
-
-  )}
-
-</motion.div>
+                  <Line
+                    type="monotone"
+                    dataKey="outAmount"
+                    name="OUT"
+                    stroke="#ef4444"
+                    strokeWidth={3}
+                    dot={{
+                      r: 4,
+                    }}
+                    activeDot={{
+                      r: 7,
+                    }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </motion.div>
 
         {/* ==================================================
             ACTION BAR
@@ -2586,7 +1951,6 @@ const graphData = useMemo(() => {
             mb-5
           "
         >
-
           <div
             className="
               text-sm
@@ -2594,21 +1958,9 @@ const graphData = useMemo(() => {
               dark:text-gray-400
             "
           >
-
-            {filteredTransactions.length}
-
-            {" "}
-
-            transaction
-            {filteredTransactions.length !== 1
-              ? "s"
-              : ""}
-
-            {" "}
-            found
-
+            {filteredTransactions.length} transaction
+            {filteredTransactions.length !== 1 ? "s" : ""} found
           </div>
-
 
           {/* ------------------------------------------------
               PDF
@@ -2616,13 +1968,8 @@ const graphData = useMemo(() => {
 
           <button
             type="button"
-            onClick={
-              generatePDF
-            }
-            disabled={
-              pdfLoading ||
-              !filteredTransactions.length
-            }
+            onClick={generatePDF}
+            disabled={pdfLoading || !filteredTransactions.length}
             className="
               w-full
               sm:w-auto
@@ -2643,15 +1990,9 @@ const graphData = useMemo(() => {
               disabled:cursor-not-allowed
             "
           >
-
-            {pdfLoading
-              ? "Generating PDF..."
-              : "📄 Generate PDF"}
-
+            {pdfLoading ? "Generating PDF..." : "📄 Generate PDF"}
           </button>
-
         </div>
-
 
         {/* ==================================================
             TRANSACTION LIST
@@ -2672,20 +2013,17 @@ const graphData = useMemo(() => {
           "
           data-aos="fade-up"
         >
-
           {/* ------------------------------------------------
               LOADING
           ------------------------------------------------- */}
 
           {loading ? (
-
             <div
               className="
                 py-24
                 text-center
               "
             >
-
               <div
                 className="
                   animate-spin
@@ -2698,7 +2036,6 @@ const graphData = useMemo(() => {
                 "
               />
 
-
               <p
                 className="
                   text-gray-500
@@ -2708,12 +2045,8 @@ const graphData = useMemo(() => {
               >
                 Loading transactions...
               </p>
-
             </div>
-
-
           ) : filteredTransactions.length === 0 ? (
-
             /* ------------------------------------------------
                EMPTY
             ------------------------------------------------- */
@@ -2725,7 +2058,6 @@ const graphData = useMemo(() => {
                 px-5
               "
             >
-
               <div
                 className="
                   text-7xl
@@ -2734,7 +2066,6 @@ const graphData = useMemo(() => {
               >
                 📦
               </div>
-
 
               <p
                 className="
@@ -2746,7 +2077,6 @@ const graphData = useMemo(() => {
                 No transactions available
               </p>
 
-
               <p
                 className="
                   text-gray-500
@@ -2754,15 +2084,10 @@ const graphData = useMemo(() => {
                   mt-2
                 "
               >
-                Try changing the date
-                or search filters.
+                Try changing the date or search filters.
               </p>
-
             </div>
-
-
           ) : (
-
             /* ------------------------------------------------
                TABLE
             ------------------------------------------------- */
@@ -2772,84 +2097,57 @@ const graphData = useMemo(() => {
                 overflow-x-auto
               "
             >
-
               <table
                 className="
                   w-full
                   min-w-[1100px]
                 "
               >
-
                 {/* ==========================================
                     HEADER
                 =========================================== */}
 
                 <thead>
-  <tr
-    className="
+                  <tr
+                    className="
       border-b
       border-gray-700
       bg-gray-900/40
     "
-  >
-    <th className="px-5 py-4 text-left">
-      #
-    </th>
+                  >
+                    <th className="px-5 py-4 text-left">#</th>
 
-    <th className="px-5 py-4 text-left">
-      Invoice
-    </th>
+                    <th className="px-5 py-4 text-left">Invoice</th>
 
-    <th className="px-5 py-4 text-left">
-      Customer
-    </th>
+                    <th className="px-5 py-4 text-left">Customer</th>
 
-    <th className="px-5 py-4 text-left">
-      Date
-    </th>
+                    <th className="px-5 py-4 text-left">Date</th>
 
-    <th className="px-5 py-4 text-left">
-      Items
-    </th>
+                    <th className="px-5 py-4 text-left">Items</th>
 
-    <th className="px-5 py-4 text-left">
-      Payment
-    </th>
+                    <th className="px-5 py-4 text-left">Payment</th>
 
-    <th className="px-5 py-4 text-right">
-      Total
-    </th>
+                    <th className="px-5 py-4 text-right">Total</th>
 
-    <th className="px-5 py-4 text-right">
-      Paid
-    </th>
+                    <th className="px-5 py-4 text-right">Paid</th>
 
-    {/* <th className="px-5 py-4 text-right">
+                    {/* <th className="px-5 py-4 text-right">
       Unpaid
     </th> */}
 
-    <th className="px-5 py-4 text-center">
-      Action
-    </th>
-  </tr>
-</thead>
-
+                    <th className="px-5 py-4 text-center">Action</th>
+                  </tr>
+                </thead>
 
                 {/* ==========================================
                     BODY
                 =========================================== */}
 
                 <tbody>
-
-                  {filteredTransactions.map(
-                    (sale, index) => (
-
-                      <tr
-                        key={
-                          sale._id ||
-                          `${index}-${sale.date}`
-                        }
-                        className="
+                  {filteredTransactions.map((sale, index) => (
+                    <tr
+                      key={sale._id || `${index}-${sale.date}`}
+                      className="
                           border-b
                           border-gray-200
                           dark:border-gray-700
@@ -2857,220 +2155,160 @@ const graphData = useMemo(() => {
                           dark:hover:bg-gray-900
                           transition
                         "
-                      >
-
-                        {/* ----------------------------------
+                    >
+                      {/* ----------------------------------
                             #
                         ----------------------------------- */}
 
-                        <td
-                          className="
+                      <td
+                        className="
                             px-5
                             py-4
                             text-gray-500
                           "
-                        >
-                          {index + 1}
-                        </td>
+                      >
+                        {index + 1}
+                      </td>
 
-
-                        {/* ----------------------------------
+                      {/* ----------------------------------
                             INVOICE
                         ----------------------------------- */}
 
-                        <td
-                          className="
+                      <td
+                        className="
                             px-5
                             py-4
                           "
-                        >
-
-                          <p
-                            className="
+                      >
+                        <p
+                          className="
                               font-semibold
                             "
-                          >
-                            {sale.invoiceNumber ||
-                              "-"}
-                          </p>
+                        >
+                          {sale.invoiceNumber || "-"}
+                        </p>
+                      </td>
 
-                        </td>
-
-
-                        {/* ----------------------------------
+                      {/* ----------------------------------
                             CUSTOMER
                         ----------------------------------- */}
 
-                        <td
-                          className="
+                      <td
+                        className="
                             px-5
                             py-4
                           "
-                        >
-
-                          <p
-                            className="
+                      >
+                        <p
+                          className="
                               font-medium
                             "
-                          >
-                            {sale.customerName ||
-                              "Walk-in Customer"}
-                          </p>
+                        >
+                          {sale.customerName || "Walk-in Customer"}
+                        </p>
 
-
-                          {sale.customerPhone && (
-
-                            <p
-                              className="
+                        {sale.customerPhone && (
+                          <p
+                            className="
                                 text-xs
                                 text-gray-500
                                 mt-1
                               "
-                            >
-                              {sale.customerPhone}
-                            </p>
+                          >
+                            {sale.customerPhone}
+                          </p>
+                        )}
+                      </td>
 
-                          )}
-
-                        </td>
-
-
-                        {/* ----------------------------------
+                      {/* ----------------------------------
                             DATE
                         ----------------------------------- */}
 
-                        <td
-                          className="
+                      <td
+                        className="
                             px-5
                             py-4
                             whitespace-nowrap
                           "
-                        >
+                      >
+                        <p>{formatTransactionDate(sale.date)}</p>
 
-                          <p>
-                            {formatTransactionDate(
-                              sale.date
-                            )}
-                          </p>
-
-
-                          <p
-                            className="
+                        <p
+                          className="
                               text-xs
                               text-gray-500
                               mt-1
                             "
-                          >
-                            {formatTransactionTime(
-                              sale.date
-                            )}
-                          </p>
+                        >
+                          {formatTransactionTime(sale.date)}
+                        </p>
+                      </td>
 
-                        </td>
-
-
-                        {/* ----------------------------------
+                      {/* ----------------------------------
                             ITEMS
                         ----------------------------------- */}
 
-                        <td
-                          className="
+                      <td
+                        className="
                             px-5
                             py-4
                           "
-                        >
-
-                          {Array.isArray(
-                            sale.items
-                          ) &&
-                          sale.items.length ? (
-
-                            <div
-                              className="
+                      >
+                        {Array.isArray(sale.items) && sale.items.length ? (
+                          <div
+                            className="
                                 space-y-1
                               "
-                            >
-
-                              {sale.items
-                                .slice(0, 3)
-                                .map(
-                                  (
-                                    item,
-                                    itemIndex
-                                  ) => (
-
-                                    <p
-                                      key={
-                                        itemIndex
-                                      }
-                                      className="
+                          >
+                            {sale.items.slice(0, 3).map((item, itemIndex) => (
+                              <p
+                                key={itemIndex}
+                                className="
                                         text-sm
                                       "
-                                    >
+                              >
+                                {item.name || "-"}
 
-                                      {item.name ||
-                                        "-"}
+                                {" × "}
 
-                                      {" × "}
+                                {item.quantity || 1}
+                              </p>
+                            ))}
 
-                                      {item.quantity ||
-                                        1}
-
-                                    </p>
-
-                                  )
-                                )}
-
-
-                              {sale.items.length >
-                                3 && (
-
-                                <p
-                                  className="
+                            {sale.items.length > 3 && (
+                              <p
+                                className="
                                     text-xs
                                     text-blue-600
                                   "
-                                >
-                                  +
-                                  {sale.items.length -
-                                    3}
-
-                                  {" "}
-                                  more
-                                </p>
-
-                              )}
-
-                            </div>
-
-                          ) : (
-
-                            <span
-                              className="
+                              >
+                                +{sale.items.length - 3} more
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <span
+                            className="
                                 text-gray-400
                               "
-                            >
-                              No items
-                            </span>
+                          >
+                            No items
+                          </span>
+                        )}
+                      </td>
 
-                          )}
-
-                        </td>
-
-
-                        {/* ----------------------------------
+                      {/* ----------------------------------
                             PAYMENT
                         ----------------------------------- */}
 
-                        <td
-                          className="
+                      <td
+                        className="
                             px-5
                             py-4
                           "
-                        >
-
-                          <span
-                            className="
+                      >
+                        <span
+                          className="
                               inline-block
                               px-3
                               py-1
@@ -3079,84 +2317,62 @@ const graphData = useMemo(() => {
                               bg-gray-100
                               dark:bg-gray-800
                             "
-                          >
-                            {sale.paymentMode ||
-                              "-"}
-                          </span>
+                        >
+                          {sale.paymentMode || "-"}
+                        </span>
+                      </td>
 
-                        </td>
-
-
-                        {/* ----------------------------------
+                      {/* ----------------------------------
                             TOTAL
                         ----------------------------------- */}
 
-                        <td
-                          className="
+                      <td
+                        className="
                             px-5
                             py-4
                             text-right
                           "
-                        >
-
-                          <p
-                            className="
+                      >
+                        <p
+                          className="
                               font-bold
                               text-emerald-600
                             "
-                          >
-                            ₹{" "}
-                            {formatAmount(
-                              sale.totalAmount ??
-                                sale.amount ??
-                                0
-                            )}
-                          </p>
+                        >
+                          ₹ {formatAmount(sale.totalAmount ?? sale.amount ?? 0)}
+                        </p>
+                      </td>
 
-                        </td>
-
-
-                        {/* ----------------------------------
+                      {/* ----------------------------------
                             PAID
                         ----------------------------------- */}
 
-                        <td
-                          className="
+                      <td
+                        className="
                             px-5
                             py-4
                             text-right
                           "
-                        >
-
-                          <p
-                            className="
+                      >
+                        <p
+                          className="
                               font-semibold
                               text-emerald-600
                             "
-                          >
-                            ₹{" "}
-                            {formatAmount(
-                              sale.paidAmount ||
-                                0
-                            )}
-                          </p>
+                        >
+                          ₹ {formatAmount(sale.paidAmount || 0)}
+                        </p>
+                      </td>
 
-                        </td>
-
-
-                        {/* ----------------------------------
+                      {/* ----------------------------------
                             UNPAID
                         ----------------------------------- */}
 
-                        <td className="px-5 py-4 text-center">
-  <button
-    type="button"
-    onClick={() =>
-      handleDeleteTransaction(
-        sale._id
-      )
-    }
-    className="
+                      <td className="px-5 py-4 text-center">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteTransaction(sale._id)}
+                          className="
       w-9
       h-9
       rounded-lg
@@ -3174,39 +2390,25 @@ const graphData = useMemo(() => {
       duration-200
       active:scale-90
     "
-    title="Delete transaction"
-  >
-    <Trash2
-      size={17}
-      strokeWidth={2}
-    />
-  </button>
-</td>
-
-                      </tr>
-
-                    )
-                  )}
-
+                          title="Delete transaction"
+                        >
+                          <Trash2 size={17} strokeWidth={2} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
-
               </table>
-
             </div>
-
           )}
-
         </motion.div>
-
       </motion.div>
-
 
       {/* ========================================================
           DURATION BOTTOM SHEET
       ========================================================= */}
 
       {showDuration && (
-
         <div
           className="
             fixed
@@ -3219,11 +2421,8 @@ const graphData = useMemo(() => {
             sm:items-center
             justify-center
           "
-          onClick={() =>
-            setShowDuration(false)
-          }
+          onClick={() => setShowDuration(false)}
         >
-
           <motion.div
             initial={{
               opacity: 0,
@@ -3233,9 +2432,7 @@ const graphData = useMemo(() => {
               opacity: 1,
               y: 0,
             }}
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+            onClick={(e) => e.stopPropagation()}
             className="
               w-full
               sm:max-w-xl
@@ -3247,7 +2444,6 @@ const graphData = useMemo(() => {
               p-6
             "
           >
-
             <h2
               className="
                 text-2xl
@@ -3258,31 +2454,20 @@ const graphData = useMemo(() => {
               Select report duration
             </h2>
 
-
             <div
               className="
                 space-y-1
               "
             >
+              {durationOptions.map((option) => {
+                const selected = duration === option;
 
-              {durationOptions.map(
-                (option) => {
-
-                  const selected =
-                    duration === option;
-
-
-                  return (
-
-                    <button
-                      type="button"
-                      key={option}
-                      onClick={() =>
-                        handleDurationChange(
-                          option
-                        )
-                      }
-                      className="
+                return (
+                  <button
+                    type="button"
+                    key={option}
+                    onClick={() => handleDurationChange(option)}
+                    className="
                         w-full
                         flex
                         justify-between
@@ -3295,21 +2480,17 @@ const graphData = useMemo(() => {
                         dark:hover:bg-gray-900
                         transition
                       "
+                  >
+                    <span
+                      className={
+                        selected ? "text-blue-600 font-medium" : "text-gray-500"
+                      }
                     >
+                      {option}
+                    </span>
 
-                      <span
-                        className={
-                          selected
-                            ? "text-blue-600 font-medium"
-                            : "text-gray-500"
-                        }
-                      >
-                        {option}
-                      </span>
-
-
-                      <span
-                        className="
+                    <span
+                      className="
                           w-8
                           h-8
                           rounded-full
@@ -3319,40 +2500,29 @@ const graphData = useMemo(() => {
                           items-center
                           justify-center
                         "
-                      >
-
-                        {selected && (
-
-                          <span
-                            className="
+                    >
+                      {selected && (
+                        <span
+                          className="
                               w-4
                               h-4
                               rounded-full
                               bg-blue-600
                             "
-                          />
-
-                        )}
-
-                      </span>
-
-                    </button>
-
-                  );
-                }
-              )}
-
+                        />
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-
           </motion.div>
-
         </div>
-
       )}
 
       {showCustomDate && (
-  <div
-    className="
+        <div
+          className="
       fixed
       inset-0
       z-50
@@ -3363,23 +2533,19 @@ const graphData = useMemo(() => {
       justify-center
       px-4
     "
-    onClick={() =>
-      setShowCustomDate(false)
-    }
-  >
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-      }}
-      animate={{
-        opacity: 1,
-        scale: 1,
-      }}
-      onClick={(e) =>
-        e.stopPropagation()
-      }
-      className="
+          onClick={() => setShowCustomDate(false)}
+        >
+          <motion.div
+            initial={{
+              opacity: 0,
+              scale: 0.95,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+            }}
+            onClick={(e) => e.stopPropagation()}
+            className="
         w-full
         max-w-lg
         bg-white
@@ -3388,35 +2554,32 @@ const graphData = useMemo(() => {
         shadow-2xl
         p-6
       "
-    >
+          >
+            {/* Header */}
 
-      {/* Header */}
-
-      <div
-        className="
+            <div
+              className="
           flex
           items-center
           justify-between
           mb-6
         "
-      >
-        <h2
-          className="
+            >
+              <h2
+                className="
             text-2xl
             font-bold
             text-gray-900
             dark:text-white
           "
-        >
-          Select Custom Date
-        </h2>
+              >
+                Select Custom Date
+              </h2>
 
-        <button
-          type="button"
-          onClick={() =>
-            setShowCustomDate(false)
-          }
-          className="
+              <button
+                type="button"
+                onClick={() => setShowCustomDate(false)}
+                className="
             w-9
             h-9
             rounded-full
@@ -3428,18 +2591,16 @@ const graphData = useMemo(() => {
             dark:hover:bg-gray-700
             transition
           "
-        >
-          ✕
-        </button>
-      </div>
+              >
+                ✕
+              </button>
+            </div>
 
+            {/* Start Date */}
 
-      {/* Start Date */}
-
-      <div className="mb-5">
-
-        <label
-          className="
+            <div className="mb-5">
+              <label
+                className="
             block
             text-sm
             font-semibold
@@ -3447,19 +2608,15 @@ const graphData = useMemo(() => {
             dark:text-gray-300
             mb-2
           "
-        >
-          Start Date
-        </label>
+              >
+                Start Date
+              </label>
 
-        <input
-          type="date"
-          value={customStartDate}
-          onChange={(e) =>
-            setCustomStartDate(
-              e.target.value
-            )
-          }
-          className="
+              <input
+                type="date"
+                value={customStartDate}
+                onChange={(e) => setCustomStartDate(e.target.value)}
+                className="
             w-full
             px-4
             py-3
@@ -3476,17 +2633,14 @@ const graphData = useMemo(() => {
             focus:ring-blue-500
             transition
           "
-        />
+              />
+            </div>
 
-      </div>
+            {/* End Date */}
 
-
-      {/* End Date */}
-
-      <div className="mb-6">
-
-        <label
-          className="
+            <div className="mb-6">
+              <label
+                className="
             block
             text-sm
             font-semibold
@@ -3494,20 +2648,16 @@ const graphData = useMemo(() => {
             dark:text-gray-300
             mb-2
           "
-        >
-          End Date
-        </label>
+              >
+                End Date
+              </label>
 
-        <input
-          type="date"
-          value={customEndDate}
-          min={customStartDate || undefined}
-          onChange={(e) =>
-            setCustomEndDate(
-              e.target.value
-            )
-          }
-          className="
+              <input
+                type="date"
+                value={customEndDate}
+                min={customStartDate || undefined}
+                onChange={(e) => setCustomEndDate(e.target.value)}
+                className="
             w-full
             px-4
             py-3
@@ -3524,26 +2674,21 @@ const graphData = useMemo(() => {
             focus:ring-indigo-500
             transition
           "
-        />
+              />
+            </div>
 
-      </div>
+            {/* Buttons */}
 
-
-      {/* Buttons */}
-
-      <div
-        className="
+            <div
+              className="
           flex
           gap-3
         "
-      >
-
-        <button
-          type="button"
-          onClick={() =>
-            setShowCustomDate(false)
-          }
-          className="
+            >
+              <button
+                type="button"
+                onClick={() => setShowCustomDate(false)}
+                className="
             flex-1
             px-5
             py-3
@@ -3558,17 +2703,14 @@ const graphData = useMemo(() => {
             dark:hover:bg-gray-900
             transition
           "
-        >
-          Cancel
-        </button>
+              >
+                Cancel
+              </button>
 
-
-        <button
-          type="button"
-          onClick={
-            handleCustomDateApply
-          }
-          className="
+              <button
+                type="button"
+                onClick={handleCustomDateApply}
+                className="
             flex-1
             px-5
             py-3
@@ -3584,19 +2726,15 @@ const graphData = useMemo(() => {
             transition
             active:scale-95
           "
-        >
-          Apply
-        </button>
-
-      </div>
-
-    </motion.div>
-  </div>
-)}
-
+              >
+                Apply
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
-
 
 export default SalesReport;
