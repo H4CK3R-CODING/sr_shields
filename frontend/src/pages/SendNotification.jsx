@@ -28,7 +28,6 @@ const API_BASE_URL =
   (import.meta.env.VITE_BACKENDURL || "http://localhost:5000") +
   "/api/v1/notifications";
 
-
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -827,63 +826,75 @@ const SendNotification = () => {
         {/* RECIPIENTS */}
         <motion.section
           data-aos="fade-up"
-          className="rounded-3xl border border-white/30 bg-white/60 p-5 shadow-xl backdrop-blur-xl dark:border-gray-700 dark:bg-black/40 sm:p-7"
+          className="w-full min-w-0 rounded-3xl border border-white/30 bg-white/60 p-4 shadow-xl backdrop-blur-xl dark:border-gray-700 dark:bg-black/40 sm:p-5 lg:p-7"
         >
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.25em] text-indigo-600 dark:text-indigo-400">
+          {/* HEADER */}
+          <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 sm:text-xs sm:tracking-[0.25em]">
                 Recipients
               </p>
 
-              <h2 className="mt-1 flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white">
-                <Users size={23} className="text-indigo-500" />
-                Groups & Channels
+              <h2 className="mt-1 flex min-w-0 items-center gap-2 text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
+                <Users
+                  size={21}
+                  className="shrink-0 text-indigo-500 sm:h-[23px] sm:w-[23px]"
+                />
+
+                <span className="truncate">Groups & Channels</span>
               </h2>
 
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-1 text-xs text-gray-600 dark:text-gray-400 sm:text-sm">
                 Select one or multiple destinations.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            {/* ACTION BUTTONS */}
+            <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3 lg:w-auto lg:flex lg:flex-wrap">
               <button
+                type="button"
                 onClick={selectAllGroups}
-                className="rounded-xl border border-sky-500/20 bg-sky-500/5 px-3 py-2 text-xs font-semibold text-sky-600 transition hover:bg-sky-500/10 dark:text-sky-400"
+                className="w-full rounded-xl border border-sky-500/20 bg-sky-500/5 px-3 py-2.5 text-xs font-semibold text-sky-600 transition hover:bg-sky-500/10 dark:text-sky-400 sm:py-2 lg:w-auto"
               >
                 Select All Groups
               </button>
 
               <button
+                type="button"
                 onClick={selectAllChannels}
-                className="rounded-xl border border-purple-500/20 bg-purple-500/5 px-3 py-2 text-xs font-semibold text-purple-600 transition hover:bg-purple-500/10 dark:text-purple-400"
+                className="w-full rounded-xl border border-purple-500/20 bg-purple-500/5 px-3 py-2.5 text-xs font-semibold text-purple-600 transition hover:bg-purple-500/10 dark:text-purple-400 sm:py-2 lg:w-auto"
               >
                 Select All Channels
               </button>
 
               <button
+                type="button"
                 onClick={clearRecipients}
-                className="rounded-xl border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-500/10 dark:text-red-400"
+                className="w-full rounded-xl border border-red-500/20 bg-red-500/5 px-3 py-2.5 text-xs font-semibold text-red-600 transition hover:bg-red-500/10 dark:text-red-400 sm:py-2 lg:w-auto"
               >
                 Clear
               </button>
             </div>
           </div>
 
-          <div className="mt-6 grid gap-6 lg:grid-cols-2 w-full">
+          {/* GROUPS + CHANNELS */}
+          <div className="mt-5 grid w-full min-w-0 grid-cols-1 gap-6 lg:mt-6 lg:grid-cols-2">
             {/* GROUPS */}
-            <div>
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="flex items-center gap-2 font-bold text-gray-800 dark:text-gray-200">
-                  <Users size={18} className="text-sky-500" />
-                  WhatsApp Groups
+            <div className="min-w-0">
+              <div className="mb-3 flex min-w-0 items-center justify-between gap-2">
+                <h3 className="flex min-w-0 items-center gap-2 font-bold text-gray-800 dark:text-gray-200">
+                  <Users size={18} className="shrink-0 text-sky-500" />
+
+                  <span className="truncate">WhatsApp Groups</span>
                 </h3>
 
-                <span className="rounded-full bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-600 dark:text-sky-400">
+                <span className="shrink-0 rounded-full bg-sky-500/10 px-2.5 py-1 text-[11px] font-semibold text-sky-600 dark:text-sky-400 sm:px-3 sm:text-xs">
                   {selectedGroups.length} selected
                 </span>
               </div>
 
-              <div className="relative mb-3">
+              {/* SEARCH */}
+              <div className="relative mb-3 min-w-0">
                 <Search
                   size={17}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -894,12 +905,13 @@ const SendNotification = () => {
                   value={groupSearch}
                   onChange={(e) => setGroupSearch(e.target.value)}
                   placeholder="Search groups by name or ID..."
-                  className="w-full rounded-xl border border-gray-300 bg-white/70 py-3 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 dark:border-gray-700 dark:bg-gray-900/60 dark:text-white dark:placeholder:text-gray-500"
+                  className="w-full min-w-0 rounded-xl border border-gray-300 bg-white/70 py-3 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 dark:border-gray-700 dark:bg-gray-900/60 dark:text-white dark:placeholder:text-gray-500"
                 />
               </div>
 
-              <div className="mb-3 flex items-center justify-between text-xs text-gray-500">
-                <span>
+              {/* GROUP COUNT */}
+              <div className="mb-3 flex min-w-0 items-center justify-between gap-2 text-xs text-gray-500">
+                <span className="truncate">
                   {filteredGroups.length} of {groups.length} groups
                 </span>
 
@@ -907,97 +919,106 @@ const SendNotification = () => {
                   <button
                     type="button"
                     onClick={() => setGroupSearch("")}
-                    className="text-sky-500 hover:text-sky-600"
+                    className="shrink-0 text-sky-500 hover:text-sky-600"
                   >
                     Clear search
                   </button>
                 )}
               </div>
 
-              <RecipientList
-                items={filteredGroups}
-                selected={selectedRecipients}
-                onToggle={toggleRecipient}
-              />
+              <div className="min-w-0">
+                <RecipientList
+                  items={filteredGroups}
+                  selected={selectedRecipients}
+                  onToggle={toggleRecipient}
+                />
+              </div>
             </div>
 
             {/* CHANNELS */}
-            <div>
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="flex items-center gap-2 font-bold text-gray-800 dark:text-gray-200">
-                  <Radio size={18} className="text-purple-500" />
-                  WhatsApp Channels
+            <div className="min-w-0">
+              <div className="mb-3 flex min-w-0 items-center justify-between gap-2">
+                <h3 className="flex min-w-0 items-center gap-2 font-bold text-gray-800 dark:text-gray-200">
+                  <Radio size={18} className="shrink-0 text-purple-500" />
+
+                  <span className="truncate">WhatsApp Channels</span>
                 </h3>
 
-                <span className="rounded-full bg-purple-500/10 px-3 py-1 text-xs font-semibold text-purple-600 dark:text-purple-400">
+                <span className="shrink-0 rounded-full bg-purple-500/10 px-2.5 py-1 text-[11px] font-semibold text-purple-600 dark:text-purple-400 sm:px-3 sm:text-xs">
                   {selectedChannels.length} selected
                 </span>
               </div>
 
               {/* ADD CHANNEL */}
-              <div className="mb-4 rounded-2xl border border-purple-300/30 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 p-4 dark:border-purple-500/20">
+              <div className="mb-4 min-w-0 rounded-2xl border border-purple-300/30 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 p-3 dark:border-purple-500/20 sm:p-4">
                 <p className="flex items-center gap-2 text-sm font-bold text-purple-600 dark:text-purple-400">
-                  <Radio size={17} />
-                  Add Channel Manually
+                  <Radio size={17} className="shrink-0" />
+                  <span>Add Channel Manually</span>
                 </p>
 
                 <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
                   Enter the Channel JID ending with{" "}
-                  <code className="rounded bg-purple-500/10 px-1.5 py-0.5 text-purple-600 dark:text-purple-300">
+                  <code className="break-all rounded bg-purple-500/10 px-1.5 py-0.5 text-purple-600 dark:text-purple-300">
                     @newsletter
                   </code>
                 </p>
 
+                {/* CHANNEL NAME */}
                 <input
                   type="text"
                   value={channelName}
                   onChange={(e) => setChannelName(e.target.value)}
                   placeholder="Channel name"
-                  className="mt-3 w-full rounded-xl border border-gray-300 bg-white/70 px-3 py-2.5 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 dark:border-gray-700 dark:bg-gray-900/60 dark:text-white"
+                  className="mt-3 w-full min-w-0 rounded-xl border border-gray-300 bg-white/70 px-3 py-3 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 dark:border-gray-700 dark:bg-gray-900/60 dark:text-white"
                 />
 
+                {/* CHANNEL ID */}
                 <input
                   type="text"
                   value={channelId}
                   onChange={(e) => setChannelId(e.target.value)}
                   placeholder="120363XXXXXXXXXXXX@newsletter"
-                  className="mt-2 w-full rounded-xl border border-gray-300 bg-white/70 px-3 py-2.5 font-mono text-xs outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 dark:border-gray-700 dark:bg-gray-900/60 dark:text-white"
+                  className="mt-2 w-full min-w-0 rounded-xl border border-gray-300 bg-white/70 px-3 py-3 font-mono text-xs outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 dark:border-gray-700 dark:bg-gray-900/60 dark:text-white"
                 />
 
+                {/* ADD BUTTON */}
                 <button
                   type="button"
                   onClick={addManualChannel}
-                  className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:scale-[1.01]"
+                  className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:scale-[1.01] active:scale-[0.99]"
                 >
                   <Radio size={16} />
                   Add & Select Channel
                 </button>
               </div>
 
-              <RecipientList
-                items={availableChannels}
-                selected={selectedRecipients}
-                onToggle={toggleRecipient}
-                onRemove={removeManualChannel}
-                removableManualOnly
-              />
+              <div className="min-w-0">
+                <RecipientList
+                  items={availableChannels}
+                  selected={selectedRecipients}
+                  onToggle={toggleRecipient}
+                  onRemove={removeManualChannel}
+                  removableManualOnly
+                />
+              </div>
             </div>
           </div>
 
-          {/* SELECTED */}
-          <div className="mt-6 rounded-2xl border border-emerald-300/30 bg-emerald-500/5 p-4 dark:border-emerald-500/20">
-            <div className="flex items-center justify-between">
-              <p className="flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                <Send size={17} />
-                Notifications will be sent to
+          {/* SELECTED RECIPIENTS */}
+          <div className="mt-5 min-w-0 rounded-2xl border border-emerald-300/30 bg-emerald-500/5 p-3 dark:border-emerald-500/20 sm:mt-6 sm:p-4">
+            <div className="flex min-w-0 items-start justify-between gap-3">
+              <p className="flex min-w-0 items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                <Send size={17} className="shrink-0" />
+
+                <span className="truncate">Notifications will be sent to</span>
               </p>
 
-              <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              <span className="shrink-0 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 sm:px-3 sm:text-xs">
                 {selectedRecipients.length} total
               </span>
             </div>
 
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 flex min-w-0 flex-wrap gap-2">
               {selectedRecipients.length === 0 ? (
                 <span className="text-sm text-gray-500">
                   No recipients selected.
@@ -1006,15 +1027,18 @@ const SendNotification = () => {
                 selectedRecipients.map((recipient) => (
                   <span
                     key={recipient.id}
-                    className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
+                    title={recipient.name}
+                    className={`flex max-w-full min-w-0 items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium ${
                       recipient.type === "group"
                         ? "bg-sky-500/10 text-sky-600 dark:text-sky-300"
                         : "bg-purple-500/10 text-purple-600 dark:text-purple-300"
                     }`}
                   >
-                    {recipient.type === "group" ? "👥" : "📢"}
+                    <span className="shrink-0">
+                      {recipient.type === "group" ? "👥" : "📢"}
+                    </span>
 
-                    {recipient.name}
+                    <span className="min-w-0 truncate">{recipient.name}</span>
                   </span>
                 ))
               )}
