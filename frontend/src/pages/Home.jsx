@@ -136,7 +136,7 @@ const Home = () => {
             </Link>
           )}
 
-          {/* SALES REPORT */}
+          {/* TRANSACTION REPORT */}
           {userRole === "admin" && (
             <Link to={"/transaction-report"}>
               <motion.button
@@ -150,7 +150,7 @@ const Home = () => {
       flex items-center gap-2 
       transition-all duration-300"
               >
-                View Sales Report
+                Transaction Report
               </motion.button>
             </Link>
           )}

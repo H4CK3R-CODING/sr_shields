@@ -2117,13 +2117,13 @@ const SalesReport = () => {
                   >
                     <th className="px-5 py-4 text-left">#</th>
 
-                    <th className="px-5 py-4 text-left">Invoice</th>
+                    {/* <th className="px-5 py-4 text-left">Invoice</th> */}
 
                     <th className="px-5 py-4 text-left">Customer</th>
 
                     <th className="px-5 py-4 text-left">Date</th>
 
-                    <th className="px-5 py-4 text-left">Items</th>
+                    {/* <th className="px-5 py-4 text-left">Items</th> */}
 
                     <th className="px-5 py-4 text-left">Payment</th>
 
@@ -2174,7 +2174,7 @@ const SalesReport = () => {
                             INVOICE
                         ----------------------------------- */}
 
-                      <td
+                      {/* <td
                         className="
                             px-5
                             py-4
@@ -2187,7 +2187,7 @@ const SalesReport = () => {
                         >
                           {sale.invoiceNumber || "-"}
                         </p>
-                      </td>
+                      </td> */}
 
                       {/* ----------------------------------
                             CUSTOMER
@@ -2248,7 +2248,7 @@ const SalesReport = () => {
                             ITEMS
                         ----------------------------------- */}
 
-                      <td
+                      {/* <td
                         className="
                             px-5
                             py-4
@@ -2295,7 +2295,7 @@ const SalesReport = () => {
                             No items
                           </span>
                         )}
-                      </td>
+                      </td> */}
 
                       {/* ----------------------------------
                             PAYMENT
