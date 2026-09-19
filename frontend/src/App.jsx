@@ -134,9 +134,9 @@ function App() {
 
             <Route path="/announcement/:id" element={<AnnouncementDetail />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/cashbook" element={<Cashbook />} />
+            <Route path="/add-transaction" element={<Cashbook />} />
 
-            <Route path="/sales-report" element={<SalesReport />} />
+            <Route path="/transaction-report" element={<SalesReport />} />
             <Route path="/send-notification" element={<SendNotification />} />
 
             <Route path="/forgetpass" element={<ForgetPass />} />

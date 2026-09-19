@@ -119,7 +119,7 @@ const Home = () => {
 
           {/* ADD TRANSACTION */}
           {userRole === "admin" && (
-            <Link to={"/cashbook"}>
+            <Link to={"/add-transaction"}>
               <motion.button
                 whileHover={{ scale: 1.07, rotate: -1 }}
                 whileTap={{ scale: 0.95 }}
@@ -138,7 +138,7 @@ const Home = () => {
 
           {/* SALES REPORT */}
           {userRole === "admin" && (
-            <Link to={"/sales-report"}>
+            <Link to={"/transaction-report"}>
               <motion.button
                 whileHover={{ scale: 1.07, rotate: -1 }}
                 whileTap={{ scale: 0.95 }}
