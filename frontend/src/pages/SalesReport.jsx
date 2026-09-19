@@ -445,12 +445,11 @@ const SalesReport = () => {
 
   const resetFilters = () => {
     setPaymentMode("All");
-
+    setTransactionType("All");
     setSearch("");
-
     setAppliedSearch("");
 
-    fetchReport(duration, "All", transactionType);
+    fetchReport(duration, "All", "All");
   };
 
   // ============================================================
@@ -595,62 +594,59 @@ const SalesReport = () => {
   // ============================================================
   // FILTERED REPORT
   // ============================================================
-
   const filteredReport = useMemo(() => {
-    // If there is no search,
-    // use backend report directly.
-    if (!appliedSearch.trim()) {
-      return {
-        transactions: report.transactions || 0,
-
-        netSale: report.netSale || 0,
-
-        paidAmount: report.paidAmount || 0,
-
-        unpaidBalance: report.unpaidBalance || 0,
-      };
-    }
-
-    // If search is applied,
-    // calculate totals from visible records.
-    let netSale = 0;
-
-    let paidAmount = 0;
-
-    let unpaidBalance = 0;
+    let totalIn = 0;
+    let totalOut = 0;
+    let cashIn = 0;
+    let cashOut = 0;
+    let onlineIn = 0;
+    let onlineOut = 0;
 
     filteredTransactions.forEach((transaction) => {
-      const total = Number(transaction.totalAmount ?? transaction.amount ?? 0);
+      const amount = Number(transaction.amount ?? 0);
+      const type = String(transaction.type || "").toUpperCase();
+      const paymentMode = transaction.paymentMode;
 
-      const paid = Number(transaction.paidAmount ?? 0);
+      if (type === "IN") {
+        totalIn += amount;
 
-      const unpaid = Number(
-        transaction.unpaidAmount ?? Math.max(total - paid, 0),
-      );
+        if (paymentMode === "Cash") {
+          cashIn += amount;
+        }
 
-      // Normal sales are positive.
-      // OUT transactions are negative.
-      if (String(transaction.type).toUpperCase() === "OUT") {
-        netSale -= total;
-      } else {
-        netSale += total;
+        if (paymentMode === "Online") {
+          onlineIn += amount;
+        }
       }
 
-      paidAmount += paid;
+      if (type === "OUT") {
+        totalOut += amount;
 
-      unpaidBalance += unpaid;
+        if (paymentMode === "Cash") {
+          cashOut += amount;
+        }
+
+        if (paymentMode === "Online") {
+          onlineOut += amount;
+        }
+      }
     });
 
     return {
       transactions: filteredTransactions.length,
 
-      netSale,
+      totalIn,
+      totalOut,
 
-      paidAmount,
+      netBalance: totalIn - totalOut,
 
-      unpaidBalance,
+      cashIn,
+      cashOut,
+
+      onlineIn,
+      onlineOut,
     };
-  }, [filteredTransactions, report, appliedSearch]);
+  }, [filteredTransactions]);
 
   // ============================================================
   // SALES GRAPH DATA
@@ -824,7 +820,7 @@ const SalesReport = () => {
 
       doc.setFont("helvetica", "bold");
 
-      doc.text("Sales Report", 14, 15);
+      doc.text("Transaction Report", 14, 15);
 
       // ========================================================
       // PERIOD
@@ -866,12 +862,16 @@ const SalesReport = () => {
 
       doc.text(`Transactions: ${filteredReport.transactions}`, 14, 37);
 
-      doc.text(`Net Sale: Rs. ${formatAmount(filteredReport.netSale)}`, 70, 37);
-
-      doc.text(`Paid: Rs. ${formatAmount(filteredReport.paidAmount)}`, 135, 37);
+      doc.text(`Money In: Rs. ${formatAmount(filteredReport.totalIn)}`, 65, 37);
 
       doc.text(
-        `Unpaid: Rs. ${formatAmount(filteredReport.unpaidBalance)}`,
+        `Money Out: Rs. ${formatAmount(filteredReport.totalOut)}`,
+        125,
+        37,
+      );
+
+      doc.text(
+        `Net Balance: Rs. ${formatAmount(filteredReport.netBalance)}`,
         190,
         37,
       );
@@ -882,52 +882,17 @@ const SalesReport = () => {
 
       const tableData = [];
 
-      filteredTransactions.forEach((sale, index) => {
-        const itemsText =
-          Array.isArray(sale.items) && sale.items.length
-            ? sale.items
-                .map(
-                  (item) =>
-                    `${item.name || "-"} x${
-                      item.quantity || 1
-                    } @ Rs.${formatAmount(item.price || 0)}`,
-                )
-                .join("\n")
-            : "-";
-
+      filteredTransactions.forEach((transaction, index) => {
         tableData.push([
-          // #
           index + 1,
-
-          // Invoice
-          sale.invoiceNumber || "-",
-
-          // Customer
-          sale.customerName || "Walk-in Customer",
-
-          // Phone
-          sale.customerPhone || "-",
-
-          // Date
-          formatTransactionDate(sale.date),
-
-          // Time
-          formatTransactionTime(sale.date),
-
-          // Items
-          itemsText,
-
-          // Payment
-          sale.paymentMode || "-",
-
-          // Total
-          `Rs. ${formatAmount(sale.totalAmount ?? sale.amount ?? 0)}`,
-
-          // Paid
-          `Rs. ${formatAmount(sale.paidAmount || 0)}`,
-
-          // Unpaid
-          `Rs. ${formatAmount(sale.unpaidAmount || 0)}`,
+          transaction.type || "-",
+          transaction.customerName || "Walk-in Customer",
+          transaction.customerPhone || "-",
+          formatTransactionDate(transaction.date),
+          formatTransactionTime(transaction.date),
+          transaction.description || "-",
+          transaction.paymentMode || "-",
+          `Rs. ${formatAmount(transaction.amount)}`,
         ]);
       });
 
@@ -941,16 +906,14 @@ const SalesReport = () => {
         head: [
           [
             "#",
-            "Invoice",
+            "Type",
             "Customer",
             "Phone",
             "Date",
             "Time",
-            "Items",
+            "Description",
             "Payment",
-            "Total",
-            "Paid",
-            "Unpaid",
+            "Amount",
           ],
         ],
 
@@ -972,45 +935,29 @@ const SalesReport = () => {
           0: {
             cellWidth: 8,
           },
-
           1: {
-            cellWidth: 23,
+            cellWidth: 18,
           },
-
           2: {
+            cellWidth: 35,
+          },
+          3: {
             cellWidth: 28,
           },
-
-          3: {
-            cellWidth: 24,
-          },
-
           4: {
             cellWidth: 22,
           },
-
           5: {
-            cellWidth: 17,
+            cellWidth: 18,
           },
-
           6: {
             cellWidth: 65,
           },
-
           7: {
-            cellWidth: 20,
+            cellWidth: 22,
           },
-
           8: {
-            cellWidth: 20,
-          },
-
-          9: {
-            cellWidth: 20,
-          },
-
-          10: {
-            cellWidth: 20,
+            cellWidth: 25,
           },
         },
       });
@@ -1046,8 +993,8 @@ const SalesReport = () => {
       const safeSearch = appliedSearch.trim().replace(/[^a-zA-Z0-9_-]/g, "_");
 
       const fileName = safeSearch
-        ? `Sales_Report_${dates.startDate}_${dates.endDate}_${safeSearch}.pdf`
-        : `Sales_Report_${dates.startDate}_${dates.endDate}.pdf`;
+        ? `Transaction_Report_${dates.startDate}_${dates.endDate}_${safeSearch}.pdf`
+        : `Transaction_Report_${dates.startDate}_${dates.endDate}.pdf`;
 
       doc.save(fileName);
 
@@ -1146,7 +1093,7 @@ const SalesReport = () => {
           "
           data-aos="zoom-in"
         >
-          Sales Report
+          Transaction Report
         </h1>
 
         {/* ==================================================
@@ -1388,14 +1335,8 @@ const SalesReport = () => {
               "
             >
               <option value="All">All Payment</option>
-
               <option value="Cash">Cash</option>
-
               <option value="Online">Online</option>
-
-              <option value="Credit">Credit</option>
-
-              <option value="Partial">Partial</option>
             </select>
 
             {/* ------------------------------------------------
@@ -1480,159 +1421,175 @@ const SalesReport = () => {
         {/* ==================================================
             SUMMARY
         =================================================== */}
+        {/* ==================================================
+    TRANSACTION OVERVIEW
+================================================== */}
 
         <motion.div
           className="
-            grid
-            grid-cols-2
-            lg:grid-cols-4
-            bg-white/80
-            dark:bg-black/60
-            backdrop-blur-xl
-            border
-            border-white/20
-            dark:border-gray-700
-            rounded-2xl
-            shadow-xl
-            overflow-hidden
-            mb-6
-          "
+    grid
+    grid-cols-2
+    lg:grid-cols-4
+    gap-3
+    sm:gap-4
+    mb-6
+  "
           data-aos="fade-up"
         >
-          {/* ------------------------------------------------
-              TRANSACTIONS
-          ------------------------------------------------- */}
+          {/* TRANSACTIONS */}
 
           <div
             className="
-              p-5
-              border-r
-              border-b
-              lg:border-b-0
-              border-gray-200
-              dark:border-gray-700
-            "
+      bg-white/80
+      dark:bg-black/60
+      backdrop-blur-xl
+      border
+      border-white/20
+      dark:border-gray-700
+      rounded-2xl
+      p-5
+      shadow-lg
+    "
           >
-            <p
-              className="
-                text-gray-500
-                dark:text-gray-400
-                text-sm
-              "
-            >
-              TRANSACTIONS
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Transactions
+              </p>
 
-            <p
-              className="
-                text-2xl
-                sm:text-3xl
-                font-bold
-                mt-1
-              "
-            >
+              <span
+                className="
+        w-8 h-8
+        rounded-lg
+        bg-blue-100
+        dark:bg-blue-900/40
+        flex items-center justify-center
+        text-blue-600
+        dark:text-blue-300
+      "
+              >
+                #
+              </span>
+            </div>
+
+            <p className="text-2xl sm:text-3xl font-bold mt-3">
               {filteredReport.transactions}
             </p>
           </div>
 
-          {/* ------------------------------------------------
-              NET SALE
-          ------------------------------------------------- */}
+          {/* MONEY IN */}
 
           <div
             className="
-              p-5
-              border-b
-              lg:border-b-0
-              lg:border-r
-              border-gray-200
-              dark:border-gray-700
-            "
+      bg-white/80
+      dark:bg-black/60
+      backdrop-blur-xl
+      border
+      border-white/20
+      dark:border-gray-700
+      rounded-2xl
+      p-5
+      shadow-lg
+    "
           >
-            <p
-              className="
-                text-gray-500
-                dark:text-gray-400
-                text-sm
-              "
-            >
-              NET SALE ⓘ
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Money In
+              </p>
 
-            <p
-              className="
-                text-2xl
-                sm:text-3xl
-                font-bold
-                text-emerald-600
-                mt-1
-              "
-            >
-              ₹ {formatAmount(filteredReport.netSale)}
+              <span
+                className="
+        w-8 h-8
+        rounded-lg
+        bg-emerald-100
+        dark:bg-emerald-900/40
+        flex items-center justify-center
+        text-emerald-600
+        dark:text-emerald-300
+      "
+              >
+                ↓
+              </span>
+            </div>
+
+            <p className="text-2xl sm:text-3xl font-bold mt-3 text-emerald-600">
+              ₹ {formatAmount(filteredReport.totalIn)}
             </p>
           </div>
 
-          {/* ------------------------------------------------
-              PAID
-          ------------------------------------------------- */}
+          {/* MONEY OUT */}
 
           <div
             className="
-              p-5
-              border-r
-              border-gray-200
-              dark:border-gray-700
-            "
+      bg-white/80
+      dark:bg-black/60
+      backdrop-blur-xl
+      border
+      border-white/20
+      dark:border-gray-700
+      rounded-2xl
+      p-5
+      shadow-lg
+    "
           >
-            <p
-              className="
-                text-gray-500
-                dark:text-gray-400
-                text-sm
-              "
-            >
-              PAID
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Money Out
+              </p>
 
-            <p
-              className="
-                text-2xl
-                sm:text-3xl
-                font-bold
-                text-emerald-600
-                mt-1
-              "
-            >
-              ₹ {formatAmount(filteredReport.paidAmount)}
+              <span
+                className="
+        w-8 h-8
+        rounded-lg
+        bg-red-100
+        dark:bg-red-900/40
+        flex items-center justify-center
+        text-red-500
+        dark:text-red-300
+      "
+              >
+                ↑
+              </span>
+            </div>
+
+            <p className="text-2xl sm:text-3xl font-bold mt-3 text-red-500">
+              ₹ {formatAmount(filteredReport.totalOut)}
             </p>
           </div>
 
-          {/* ------------------------------------------------
-              UNPAID
-          ------------------------------------------------- */}
+          {/* NET BALANCE */}
 
-          <div className="p-5">
-            <p
-              className="
-                text-gray-500
-                dark:text-gray-400
-                text-sm
-              "
-            >
-              UNPAID BALANCE ⓘ
+          <div
+            className="
+      bg-gradient-to-br
+      from-blue-600
+      via-indigo-600
+      to-purple-600
+      rounded-2xl
+      p-5
+      shadow-lg
+      text-white
+    "
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-white/80">Net Balance</p>
+
+              <span
+                className="
+        w-8 h-8
+        rounded-lg
+        bg-white/20
+        flex items-center justify-center
+      "
+              >
+                ₹
+              </span>
+            </div>
+
+            <p className="text-2xl sm:text-3xl font-bold mt-3">
+              ₹ {formatAmount(filteredReport.netBalance)}
             </p>
 
-            <p
-              className="
-                text-2xl
-                sm:text-3xl
-                font-bold
-                text-red-500
-                mt-1
-              "
-            >
-              ₹ {formatAmount(filteredReport.unpaidBalance)}
-            </p>
+            <p className="text-xs text-white/70 mt-1">In − Out</p>
           </div>
         </motion.div>
         {/* ============================================================ SALES GRAPH ============================================================ */}
@@ -2117,23 +2074,17 @@ const SalesReport = () => {
                   >
                     <th className="px-5 py-4 text-left">#</th>
 
-                    {/* <th className="px-5 py-4 text-left">Invoice</th> */}
+                    <th className="px-5 py-4 text-left">Type</th>
 
                     <th className="px-5 py-4 text-left">Customer</th>
 
+                    <th className="px-5 py-4 text-left">Description</th>
+
                     <th className="px-5 py-4 text-left">Date</th>
 
-                    {/* <th className="px-5 py-4 text-left">Items</th> */}
-
+                    <th className="px-5 py-4 text-right">Amount</th>
                     <th className="px-5 py-4 text-left">Payment</th>
 
-                    <th className="px-5 py-4 text-right">Total</th>
-
-                    <th className="px-5 py-4 text-right">Paid</th>
-
-                    {/* <th className="px-5 py-4 text-right">
-      Unpaid
-    </th> */}
 
                     <th className="px-5 py-4 text-center">Action</th>
                   </tr>
@@ -2170,6 +2121,21 @@ const SalesReport = () => {
                         {index + 1}
                       </td>
 
+                      {/* ----------------------------------
+                            Type
+                        ----------------------------------- */}
+
+                      <td className="px-5 py-4">
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                            sale.type === "IN"
+                              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                              : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
+                          }`}
+                        >
+                          {sale.type || "-"}
+                        </span>
+                      </td>
                       {/* ----------------------------------
                             INVOICE
                         ----------------------------------- */}
@@ -2218,6 +2184,15 @@ const SalesReport = () => {
                             {sale.customerPhone}
                           </p>
                         )}
+                      </td>
+
+                      {/* ----------------------------------
+                            Description
+                        ----------------------------------- */}
+                      <td className="px-5 py-4">
+                        <p className="text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">
+                          {sale.description || "-"}
+                        </p>
                       </td>
 
                       {/* ----------------------------------
@@ -2296,6 +2271,18 @@ const SalesReport = () => {
                           </span>
                         )}
                       </td> */}
+                      <td className="px-5 py-4 text-right">
+                        <p
+                          className={`font-bold ${
+                            sale.type === "IN"
+                              ? "text-emerald-600"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {sale.type === "IN" ? "+" : "-"} ₹{" "}
+                          {formatAmount(sale.amount)}
+                        </p>
+                      </td>
 
                       {/* ----------------------------------
                             PAYMENT
@@ -2326,7 +2313,7 @@ const SalesReport = () => {
                             TOTAL
                         ----------------------------------- */}
 
-                      <td
+                      {/* <td
                         className="
                             px-5
                             py-4
@@ -2339,15 +2326,15 @@ const SalesReport = () => {
                               text-emerald-600
                             "
                         >
-                          ₹ {formatAmount(sale.totalAmount ?? sale.amount ?? 0)}
+                          ₹ {formatAmount(sale.amount)}
                         </p>
-                      </td>
-
+                      </td> */}
+                      
                       {/* ----------------------------------
                             PAID
                         ----------------------------------- */}
 
-                      <td
+                      {/* <td
                         className="
                             px-5
                             py-4
@@ -2362,10 +2349,10 @@ const SalesReport = () => {
                         >
                           ₹ {formatAmount(sale.paidAmount || 0)}
                         </p>
-                      </td>
+                      </td> */}
 
                       {/* ----------------------------------
-                            UNPAID
+                            Delete
                         ----------------------------------- */}
 
                       <td className="px-5 py-4 text-center">
