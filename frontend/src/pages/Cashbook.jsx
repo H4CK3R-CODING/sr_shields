@@ -329,6 +329,17 @@ const Cashbook = () => {
       // SUCCESS
       // --------------------------------------------------------
 
+      const speakSuccess = (amount) => {
+        const message = new SpeechSynthesisUtterance(
+          `Your transaction of ${amount} rupees has been successfully recorded.`,
+        );
+
+        message.lang = "en-IN";
+        message.rate = 0.9;
+
+        window.speechSynthesis.speak(message);
+      };
+
       if (data?.success) {
         toast.success(
           data.message ||
@@ -359,6 +370,7 @@ const Cashbook = () => {
         // ------------------------------------------------------
 
         await fetchCashbook();
+        speakSuccess(formData.amount);
       } else {
         toast.error(data?.message || "Something went wrong.");
       }
