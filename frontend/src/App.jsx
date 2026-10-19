@@ -29,6 +29,7 @@ import Receipt from "./pages/Receipt";
 import Cashbook from "./pages/Cashbook";
 import SalesReport from "./pages/SalesReport";
 import SendNotification from "./pages/SendNotification";
+import DGTravelDashboard from "./pages/DGTravelDashboard";
 
 // ScrollToTop component
 const ScrollToTop = () => {
@@ -137,6 +138,7 @@ function App() {
             <Route path="/add-transaction" element={<Cashbook />} />
 
             <Route path="/transaction-report" element={<SalesReport />} />
+            <Route path="/travel-dashboard" element={<DGTravelDashboard />} />
             <Route path="/send-notification" element={<SendNotification />} />
 
             <Route path="/forgetpass" element={<ForgetPass />} />

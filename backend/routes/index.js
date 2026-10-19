@@ -6,6 +6,7 @@ import countController from "../controllers/countController.js";
 import cashbookRoutes from "./cashbookRoutes.js";
 import salesReportRoutes from "./salesReportRoutes.js";
 import notificationRoutes from "./notificationRoutes.js";
+import travelRoutes from "./travelRoutes.js";
 
 
 const mainRouter = express.Router();
@@ -20,7 +21,7 @@ mainRouter.use(
   salesReportRoutes
 );
 mainRouter.use("/sendMessage", contactForm);
-
+mainRouter.use("/travel", travelRoutes);
 mainRouter.use("/notifications", notificationRoutes);
 
 
