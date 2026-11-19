@@ -20,10 +20,10 @@ import {
   CircleCheck,
   User,
   CreditCard,
-  Phone,
-  Mail,
   BarChart3,
   FileDown,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -36,7 +36,7 @@ import {
   Legend,
 } from "recharts";
 
-/* ───────────────────────── helpers (unchanged logic) ───────────────────────── */
+/* ───────────────────────── helpers ───────────────────────── */
 
 const API = `${import.meta.env.VITE_BACKENDURL}/api/v1/travel`;
 const token = () => localStorage.getItem("token");
@@ -61,6 +61,12 @@ const dateLabel = (value) =>
         year: "numeric",
       })
     : "—";
+// Converts a stored date (ISO string) to the yyyy-mm-dd value <input type="date"> expects.
+const toInputDate = (value) => {
+  if (!value) return "";
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
+};
 const initialForm = () => ({
   bookingDate: today(),
   clientName: "",
@@ -76,6 +82,22 @@ const initialForm = () => ({
   balanceDueDate: "",
   salesExecutive: "",
   notes: "",
+});
+const formFromBooking = (b) => ({
+  bookingDate: toInputDate(b.bookingDate) || today(),
+  clientName: b.clientName || "",
+  contactNumber: b.contactNumber || "",
+  email: b.email || "",
+  destination: b.destination || "",
+  travelDate: toInputDate(b.travelDate),
+  pax: b.pax ?? 1,
+  ratePerPax: b.ratePerPax ?? "",
+  amountCollected: b.amountCollected ?? 0,
+  paymentMode: b.paymentMode || "UPI / GPay / PhonePe",
+  paymentStatus: b.paymentStatus || "Partial",
+  balanceDueDate: toInputDate(b.balanceDueDate),
+  salesExecutive: b.salesExecutive || "",
+  notes: b.notes || "",
 });
 
 const PAYMENT_MODES = [
@@ -267,10 +289,13 @@ function FormSection({ icon: Icon, title, children }) {
   );
 }
 
-/* ───────────────────────── booking modal ───────────────────────── */
+/* ───────────────────────── booking modal (create + edit) ───────────────────────── */
 
-function BookingModal({ onClose, onCreated }) {
-  const [form, setForm] = useState(initialForm);
+function BookingModal({ booking, onClose, onCreated }) {
+  const isEdit = Boolean(booking);
+  const [form, setForm] = useState(() =>
+    booking ? formFromBooking(booking) : initialForm(),
+  );
   const [saving, setSaving] = useState(false);
   const [customerQuery, setCustomerQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -327,6 +352,7 @@ function BookingModal({ onClose, onCreated }) {
   };
   const handleNameChange = (value) => {
     setSelectedCustomer(null);
+    // Suggestions work in both create and edit mode (the effect only fires once the user types).
     setCustomerQuery(value);
     update("clientName", value);
   };
@@ -339,28 +365,63 @@ function BookingModal({ onClose, onCreated }) {
     if (Number(form.pax) < 1 || Number(form.ratePerPax) < 0)
       return toast.error("Enter valid guest and rate values.");
     if (collected > total)
-      return toast.error("Amount collected cannot exceed the booking total.");
+      return toast.error(
+        isEdit
+          ? `Amount collected (${money(collected)}) cannot exceed the booking total.`
+          : "Amount collected cannot exceed the booking total.",
+      );
     setSaving(true);
     try {
-      const payload = {
-        ...form,
-        customerId: selectedCustomer?._id || undefined,
-        pax: Number(form.pax),
-        ratePerPax: Number(form.ratePerPax),
-        totalAmount: total,
-        amountCollected: collected,
-        balanceDue: balance,
-      };
-      const { data } = await axios.post(
-        `${API}/bookings`,
-        payload,
-        authConfig(),
-      );
-      toast.success(data.message || "Booking created successfully.");
+      if (isEdit) {
+        const payload = {
+          clientName: form.clientName,
+          contactNumber: form.contactNumber,
+          email: form.email,
+          customerId: selectedCustomer?._id || undefined,
+          bookingDate: form.bookingDate,
+          destination: form.destination,
+          travelDate: form.travelDate,
+          pax: Number(form.pax),
+          ratePerPax: Number(form.ratePerPax),
+          totalAmount: total,
+          amountCollected: collected,
+          balanceDue: balance,
+          paymentStatus:
+            collected <= 0 ? "Unpaid" : collected >= total ? "Paid" : "Partial",
+          balanceDueDate: form.balanceDueDate || null,
+          salesExecutive: form.salesExecutive,
+          notes: form.notes,
+        };
+        const { data } = await axios.put(
+          `${API}/bookings/${booking._id}`,
+          payload,
+          authConfig(),
+        );
+        toast.success(data.message || "Booking updated successfully.");
+      } else {
+        const payload = {
+          ...form,
+          customerId: selectedCustomer?._id || undefined,
+          pax: Number(form.pax),
+          ratePerPax: Number(form.ratePerPax),
+          totalAmount: total,
+          amountCollected: collected,
+          balanceDue: balance,
+        };
+        const { data } = await axios.post(
+          `${API}/bookings`,
+          payload,
+          authConfig(),
+        );
+        toast.success(data.message || "Booking created successfully.");
+      }
       onCreated();
       onClose();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Unable to create booking.");
+      toast.error(
+        error.response?.data?.message ||
+          (isEdit ? "Unable to update booking." : "Unable to create booking."),
+      );
     } finally {
       setSaving(false);
     }
@@ -411,17 +472,19 @@ function BookingModal({ onClose, onCreated }) {
       <header className="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-7 dark:border-slate-800">
         <div className="flex items-center gap-3">
           <span className="rounded-xl bg-indigo-50 p-2.5 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
-            <Plane size={20} />
+            {isEdit ? <Pencil size={20} /> : <Plane size={20} />}
           </span>
           <div>
             <h2
               id="booking-modal-title"
               className="text-lg font-extrabold text-slate-900 dark:text-white"
             >
-              Add New Client Booking
+              {isEdit ? "Edit Booking" : "Add New Client Booking"}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Register the package and initial payment
+              {isEdit
+                ? `${booking.bookingId} · update client and trip details`
+                : "Register the package and initial payment"}
             </p>
           </div>
         </div>
@@ -503,7 +566,8 @@ function BookingModal({ onClose, onCreated }) {
                   auto-filled
                 </span>
               )}
-              {form.clientName.trim().length >= 2 &&
+              {!isEdit &&
+                form.clientName.trim().length >= 2 &&
                 !selectedCustomer &&
                 suggestions.length === 0 &&
                 !searching && (
@@ -552,7 +616,7 @@ function BookingModal({ onClose, onCreated }) {
                 required: true,
                 placeholder: "0",
               })}
-              <div className="mt-2 flex flex-wrap gap-1.5">
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
                 {[
                   ["25%", 0.25],
                   ["50%", 0.5],
@@ -573,12 +637,32 @@ function BookingModal({ onClose, onCreated }) {
                     {label}
                   </button>
                 ))}
+                {isEdit && (
+                  <button
+                    type="button"
+                    disabled={collected <= 0}
+                    onClick={() => update("amountCollected", "0")}
+                    title="Delete collected amount (sets it to 0)"
+                    aria-label="Delete collected amount"
+                    className={`ml-auto inline-flex items-center gap-1 rounded-lg border border-red-200 px-2.5 py-1 text-[11px] font-bold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10 ${focusRing}`}
+                  >
+                    <Trash2 size={12} /> Delete
+                  </button>
+                )}
               </div>
+              {isEdit && (
+                <p className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+                  Current status: <StatusBadge status={booking.paymentStatus} />
+                  . Changes apply when you save.
+                </p>
+              )}
             </div>
-            {field("Payment mode", "paymentMode", { options: PAYMENT_MODES })}
-            {field("Payment status", "paymentStatus", {
-              options: ["Unpaid", "Partial", "Paid"],
-            })}
+            {!isEdit &&
+              field("Payment mode", "paymentMode", { options: PAYMENT_MODES })}
+            {!isEdit &&
+              field("Payment status", "paymentStatus", {
+                options: ["Unpaid", "Partial", "Paid"],
+              })}
             {field("Balance due date", "balanceDueDate", { type: "date" })}
             {field("Sales executive", "salesExecutive", {
               placeholder: "Executive name",
@@ -642,7 +726,9 @@ function BookingModal({ onClose, onCreated }) {
               role="alert"
               className="mt-2 text-xs font-semibold text-red-600 dark:text-red-400"
             >
-              Amount collected is more than the booking total.
+              {isEdit
+                ? "Amount collected is more than the booking total."
+                : "Amount collected is more than the booking total."}
             </p>
           )}
           <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
@@ -659,7 +745,11 @@ function BookingModal({ onClose, onCreated }) {
               ) : (
                 <Check size={16} />
               )}
-              {saving ? "Saving…" : "Register Booking"}
+              {saving
+                ? "Saving…"
+                : isEdit
+                  ? "Save Changes"
+                  : "Register Booking"}
             </button>
           </div>
         </footer>
@@ -732,12 +822,41 @@ function AddPaymentButton({ booking, onClick }) {
   );
 }
 
+function EditButton({ booking, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title="Edit booking"
+      aria-label={`Edit booking ${booking.bookingId || ""} for ${booking.clientName || ""}`}
+      className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 active:scale-95 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-500/50 dark:hover:bg-indigo-500/10 ${focusRing}`}
+    >
+      <Pencil size={13} /> Edit
+    </button>
+  );
+}
+
+function DeleteButton({ booking, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title="Delete booking"
+      aria-label={`Delete booking ${booking.bookingId || ""} for ${booking.clientName || ""}`}
+      className={`inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-600 transition hover:bg-red-50 active:scale-95 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10 ${focusRing}`}
+    >
+      <Trash2 size={13} /> Delete
+    </button>
+  );
+}
+
 export default function DGTravelDashboard() {
   const [summary, setSummary] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [chart, setChart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [editBooking, setEditBooking] = useState(null);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
   const [period, setPeriod] = useState("year");
@@ -746,6 +865,8 @@ export default function DGTravelDashboard() {
   const [paymentMode, setPaymentMode] = useState("UPI / GPay / PhonePe");
   const [paymentSaving, setPaymentSaving] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchDashboard = useCallback(async () => {
     setLoading(true);
@@ -978,8 +1099,30 @@ export default function DGTravelDashboard() {
     }
   };
 
+  const closeDelete = useCallback(() => setDeleteTarget(null), []);
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const { data } = await axios.delete(
+        `${API}/bookings/${deleteTarget._id}`,
+        authConfig(),
+      );
+      toast.success(data.message || "Booking deleted.");
+      setDeleteTarget(null);
+      await fetchDashboard();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Unable to delete booking.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const closePayment = useCallback(() => setPaymentBooking(null), []);
-  const closeBooking = useCallback(() => setShowModal(false), []);
+  const closeBooking = useCallback(() => {
+    setShowModal(false);
+    setEditBooking(null);
+  }, []);
 
   const submitPayment = async (event) => {
     event.preventDefault();
@@ -1404,7 +1547,15 @@ export default function DGTravelDashboard() {
                       </div>
                     </div>
                     <ProgressBar value={pct} status={b.paymentStatus} />
-                    <div className="flex justify-end">
+                    <div className="flex items-center justify-end gap-2">
+                      <EditButton
+                        booking={b}
+                        onClick={() => setEditBooking(b)}
+                      />
+                      <DeleteButton
+                        booking={b}
+                        onClick={() => setDeleteTarget(b)}
+                      />
                       <AddPaymentButton
                         booking={b}
                         onClick={() => openPayment(b)}
@@ -1497,10 +1648,20 @@ export default function DGTravelDashboard() {
                           <StatusBadge status={b.paymentStatus} />
                         </td>
                         <td className="px-4 py-4">
-                          <AddPaymentButton
-                            booking={b}
-                            onClick={() => openPayment(b)}
-                          />
+                          <div className="flex items-center gap-2">
+                            <EditButton
+                              booking={b}
+                              onClick={() => setEditBooking(b)}
+                            />
+                            <DeleteButton
+                              booking={b}
+                              onClick={() => setDeleteTarget(b)}
+                            />
+                            <AddPaymentButton
+                              booking={b}
+                              onClick={() => openPayment(b)}
+                            />
+                          </div>
                         </td>
                       </tr>
                     );
@@ -1520,8 +1681,13 @@ export default function DGTravelDashboard() {
         </div>
       </section>
 
-      {showModal && (
-        <BookingModal onClose={closeBooking} onCreated={fetchDashboard} />
+      {(showModal || editBooking) && (
+        <BookingModal
+          key={editBooking?._id || "new"}
+          booking={editBooking}
+          onClose={closeBooking}
+          onCreated={fetchDashboard}
+        />
       )}
 
       {/* ── Record payment ── */}
@@ -1650,6 +1816,57 @@ export default function DGTravelDashboard() {
               </button>
             </div>
           </form>
+        </Modal>
+      )}
+
+      {/* ── Delete booking ── */}
+      {deleteTarget && (
+        <Modal
+          onClose={closeDelete}
+          labelledBy="delete-modal-title"
+          z="z-[120]"
+          maxWidth="max-w-md"
+        >
+          <div className="p-6">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="rounded-xl bg-red-50 p-2.5 text-red-600 dark:bg-red-500/10 dark:text-red-400">
+                <Trash2 size={20} />
+              </span>
+              <h2
+                id="delete-modal-title"
+                className="text-lg font-extrabold text-slate-900 dark:text-white"
+              >
+                Delete booking?
+              </h2>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-300">
+              {deleteTarget.clientName} · {deleteTarget.bookingId} ·{" "}
+              {money(deleteTarget.amountCollected)} collected. This permanently
+              removes the booking and its payment history and cannot be undone.
+            </p>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={closeDelete}
+                className={btnSecondary}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={deleting}
+                className={`${btnPrimary} !from-red-600 !to-red-600 !shadow-red-500/25`}
+              >
+                {deleting ? (
+                  <RefreshCw size={16} className="animate-spin" />
+                ) : (
+                  <Trash2 size={16} />
+                )}
+                {deleting ? "Deleting…" : "Delete booking"}
+              </button>
+            </div>
+          </div>
         </Modal>
       )}
     </div>

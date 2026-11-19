@@ -180,3 +180,125 @@ export const addBookingPayment = async (req, res) => {
     return res.status(500).json({ success: false, message: "Unable to record payment." });
   }
 };
+
+
+export const updateBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ success: false, message: "Invalid booking ID." });
+    }
+
+    const booking = await TravelBooking.findById(id);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "Booking not found." });
+    }
+
+    const {
+      customerId, clientName, contactNumber, email, bookingDate, destination, travelDate,
+      pax, ratePerPax, amountCollected, balanceDueDate, salesExecutive, notes,
+    } = req.body;
+
+    if (!String(clientName || "").trim() || !String(destination || "").trim() || !travelDate) {
+      return res.status(400).json({ success: false, message: "Client name, destination and travel date are required." });
+    }
+
+    const guests = Number(pax);
+    const rate = Number(ratePerPax);
+    if (!Number.isInteger(guests) || guests < 1 || !Number.isFinite(rate) || rate < 0) {
+      return res.status(400).json({ success: false, message: "Enter valid guest count and rate." });
+    }
+
+    const travel = new Date(travelDate);
+    if (Number.isNaN(travel.getTime())) {
+      return res.status(400).json({ success: false, message: "Invalid travel date." });
+    }
+
+    const total = guests * rate;
+
+    // Collected amount is editable; if omitted keep the existing value.
+    const collected =
+      amountCollected === undefined || amountCollected === null || amountCollected === ""
+        ? Number(booking.amountCollected || 0)
+        : Number(amountCollected);
+    if (!Number.isFinite(collected) || collected < 0) {
+      return res.status(400).json({ success: false, message: "Enter a valid amount collected." });
+    }
+    if (collected > total) {
+      return res.status(400).json({
+        success: false,
+        message: "Amount collected cannot exceed the booking total.",
+      });
+    }
+
+    // Keep the payments ledger in sync with the edited collected amount.
+    const previous = Number(booking.amountCollected || 0);
+    const diff = Math.round((collected - previous) * 100) / 100;
+    if (diff > 0) {
+      booking.payments.push({
+        amount: diff,
+        paymentMode: booking.paymentMode || "Other",
+        recordedBy: req.user?._id || null,
+      });
+    } else if (diff < 0) {
+      let toRemove = -diff;
+      while (toRemove > 0 && booking.payments.length) {
+        const last = booking.payments[booking.payments.length - 1];
+        if (last.amount <= toRemove) {
+          toRemove -= last.amount;
+          booking.payments.pop();
+        } else {
+          last.amount -= toRemove;
+          toRemove = 0;
+        }
+      }
+    }
+
+    // Link to the selected / existing customer if one was chosen in the form.
+    if (customerId && mongoose.isValidObjectId(customerId)) {
+      const customer = await findOrCreateCustomer({
+        customerId, clientName, contactNumber, email, userId: req.user?._id,
+      });
+      booking.customerId = customer._id;
+    }
+
+    booking.clientName = String(clientName).trim();
+    booking.contactNumber = String(contactNumber || "").trim();
+    booking.email = String(email || "").trim().toLowerCase();
+    booking.bookingDate = bookingDate ? new Date(bookingDate) : booking.bookingDate;
+    booking.destination = String(destination).trim();
+    booking.travelDate = travel;
+    booking.pax = guests;
+    booking.ratePerPax = rate;
+    booking.totalAmount = total;
+    booking.amountCollected = collected;
+    booking.balanceDue = Math.max(0, total - collected);
+    booking.paymentStatus = paymentStatusFor(total, collected);
+    booking.balanceDueDate = balanceDueDate ? new Date(balanceDueDate) : null;
+    booking.salesExecutive = String(salesExecutive || "").trim();
+    booking.notes = String(notes || "").trim();
+
+    await booking.save();
+    return res.json({ success: true, message: "Booking updated successfully.", booking });
+  } catch (error) {
+    console.error("Update travel booking:", error);
+    return res.status(500).json({ success: false, message: "Unable to update booking." });
+  }
+};
+
+export const deleteBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ success: false, message: "Invalid booking ID." });
+    }
+    const booking = await TravelBooking.findByIdAndDelete(id);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "Booking not found." });
+    }
+    return res.json({ success: true, message: "Booking deleted successfully." });
+  } catch (error) {
+    console.error("Delete travel booking:", error);
+    return res.status(500).json({ success: false, message: "Unable to delete booking." });
+  }
+};
